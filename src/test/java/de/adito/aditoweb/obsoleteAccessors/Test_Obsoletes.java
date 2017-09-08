@@ -11,10 +11,19 @@ public class Test_Obsoletes
 {
 
   @Test
-  public void test_convertSimple() throws Exception
+  public void test_convertSimpleFunction() throws Exception
   {
-    Function function = new Function("container", "getDoubleList", new Object[0], double[].class);
+    // getDoubleArr -> getIntArray
+    Function function = new Function("container", "getDoubleArr", new Object[0], double[].class);
     Function convertedFunction = Obsoletes.convert(function, "js");
+    Assert.assertNotNull(convertedFunction);
+    Assert.assertEquals("container", convertedFunction.getPackageName());
+    Assert.assertEquals("getIntArray", convertedFunction.getIdentifier());
+    Assert.assertEquals(int[].class, convertedFunction.getReturnType());
+
+    // getIntList -> getIntArray
+    function = new Function("container", "getIntList", new Object[0], int[].class);
+    convertedFunction = Obsoletes.convert(function, "js");
     Assert.assertNotNull(convertedFunction);
     Assert.assertEquals("container", convertedFunction.getPackageName());
     Assert.assertEquals("getIntArray", convertedFunction.getIdentifier());
@@ -30,8 +39,8 @@ public class Test_Obsoletes
     public final static String CLASSIFICATION_PUBLIC = "asdf";
 
     @ObsoleteVersions({
-        @ObsoleteVersion(version = 0, pkgName = "container", id = "getDoubleList", returnType = double[].class),
-        @ObsoleteVersion(version = 1, pkgName = "container", id = "getIntList", returnType = double[].class)
+        @ObsoleteVersion(version = 0, id = "getDoubleArr", type = double[].class),
+        @ObsoleteVersion(version = 1, id = "getIntList")
     })
     public int[] getIntArray()
     {

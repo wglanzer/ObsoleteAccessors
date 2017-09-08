@@ -10,6 +10,6 @@ public @interface ObsoleteVersion
   String pkgName() default "";
   String id() default "";
   Class<? extends IParameterConverter> converter() default IParameterConverter.DEFAULT.class;
-  Class<?> returnType() default Object.class;
+  Class<?> type() default Object.class;
 
 }
