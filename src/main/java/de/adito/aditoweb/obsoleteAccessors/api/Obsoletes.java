@@ -16,7 +16,7 @@ public abstract class Obsoletes
   @Nullable
   public static Function convert(Function pOldFunction, @Nullable String pCategory)
   {
-    return FunctionConverterAccessor.getInstance().convert(pOldFunction, pCategory);
+    return FunctionConverterAccessor.convert(pOldFunction, pCategory);
   }
 
 }
