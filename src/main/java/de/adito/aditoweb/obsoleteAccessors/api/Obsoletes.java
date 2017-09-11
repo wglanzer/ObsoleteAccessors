@@ -24,7 +24,7 @@ public abstract class Obsoletes
    * @return the newest Accessor available or <tt>null</tt>
    */
   @Nullable
-  public static OAAccessor convert(OAAccessor pOldAccessor, @Nullable String pCategory)
+  public static OAAccessor convert(OAAccessor pOldAccessor, @Nullable String pCategory) throws Exception
   {
     return ObsoleteAccessorsAccessor.convert(pOldAccessor, pCategory);
   }

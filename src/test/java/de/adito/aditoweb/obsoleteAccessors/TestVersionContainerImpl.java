@@ -1,7 +1,8 @@
 package de.adito.aditoweb.obsoleteAccessors;
 
-import de.adito.aditoweb.obsoleteAccessors.api.OAAttribute;
+import de.adito.aditoweb.obsoleteAccessors.api.*;
 import de.adito.aditoweb.obsoleteAccessors.spi.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -33,8 +34,9 @@ public class TestVersionContainerImpl
 
   public static class _IntListToIntArrayConverter implements IAttributeConverter
   {
+    @NotNull
     @Override
-    public List<OAAttribute> convert(List<OAAttribute> pAttributes)
+    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes) throws AttributeConversionException
     {
       return Collections.singletonList(new OAAttribute(String.class, String.valueOf(pAttributes.get(0).getValue())));
     }

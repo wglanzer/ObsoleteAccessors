@@ -1,5 +1,7 @@
 package de.adito.aditoweb.obsoleteAccessors.impl.attrConv;
 
+import de.adito.aditoweb.obsoleteAccessors.api.AttributeConversionException;
+
 import java.util.List;
 
 /**
@@ -16,7 +18,7 @@ public class ProxyAttributeConverter implements IAccessorAttributeConverter
   }
 
   @Override
-  public List<IAccessorAttribute> convert(List<IAccessorAttribute> pAttributes)
+  public List<IAccessorAttribute> convert(List<IAccessorAttribute> pAttributes) throws AttributeConversionException
   {
     for (IAccessorAttributeConverter converter : converters)
     {

@@ -1,6 +1,7 @@
 package de.adito.aditoweb.obsoleteAccessors.spi;
 
-import de.adito.aditoweb.obsoleteAccessors.api.OAAttribute;
+import de.adito.aditoweb.obsoleteAccessors.api.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -19,7 +20,8 @@ public interface IAttributeConverter
    * @param pAttributes Attributes to be converted
    * @return attributes of the next version
    */
-  List<OAAttribute> convert(List<OAAttribute> pAttributes);  //todo ex if not possible
+  @NotNull
+  List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes) throws AttributeConversionException;
 
   /**
    * Default-Implementation with no conversion.
@@ -27,8 +29,9 @@ public interface IAttributeConverter
    */
   class DEFAULT implements IAttributeConverter
   {
+    @NotNull
     @Override
-    public List<OAAttribute> convert(List<OAAttribute> pAttributes)
+    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes)
     {
       return pAttributes;
     }

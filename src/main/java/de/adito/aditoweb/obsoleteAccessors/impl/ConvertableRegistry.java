@@ -56,7 +56,7 @@ class ConvertableRegistry
   }
 
   @Nullable
-  public OAAccessor find(String pCategory, String pPkgName, OAAccessor pAccessorToFind)
+  public OAAccessor find(String pCategory, String pPkgName, OAAccessor pAccessorToFind) throws Exception
   {
     Map<String, Map<IAccessorVersion[], IAccessorVersion>> category = _CONVERSIONMAP.get(pCategory);
     if(category == null)
@@ -88,16 +88,25 @@ class ConvertableRegistry
     return null;
   }
 
-  private OAAccessor _createFunction(IAccessorVersion pLatestVersion, IAccessorAttributeConverter pAttributeConverter, OAAccessor pOldAccessor)
+  private OAAccessor _createFunction(IAccessorVersion pLatestVersion, IAccessorAttributeConverter pAttributeConverter, OAAccessor pOldAccessor) throws AttributeConversionException
   {
-    List<OAAttribute> attributes = pOldAccessor.getAttributes();
-    List<IAccessorAttribute> oldParameters = attributes != null ? attributes.stream()
-        .map(pParameter -> new SimpleAccessorAttribute(new ImmutableAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
-        .collect(Collectors.toList()) : Collections.emptyList();
-    List<IAccessorAttribute> convertedParameters = pAttributeConverter.convert(oldParameters);
-    List<OAAttribute> params = convertedParameters.stream()
-        .map(pAttribute -> new OAAttribute(pAttribute.getDescription().getType(), pAttribute.getValue()))
-        .collect(Collectors.toList());
+    List<OAAttribute> params;
+
+    try
+    {
+      List<OAAttribute> attributes = pOldAccessor.getAttributes();
+      List<IAccessorAttribute> oldParameters = attributes != null ? attributes.stream()
+          .map(pParameter -> new SimpleAccessorAttribute(new ImmutableAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
+          .collect(Collectors.toList()) : Collections.emptyList();
+      List<IAccessorAttribute> convertedParameters = pAttributeConverter.convert(oldParameters);
+      params = convertedParameters.stream()
+          .map(pAttribute -> new OAAttribute(pAttribute.getDescription().getType(), pAttribute.getValue()))
+          .collect(Collectors.toList());
+    }
+    catch(Exception e)
+    {
+      throw new AttributeConversionException("Conversion for parameters failed for accessor: \"" + pOldAccessor + "\"", e);
+    }
 
     return new OAAccessor(pLatestVersion.getPkgName(), pLatestVersion.getId(), params, pLatestVersion.getType());
   }

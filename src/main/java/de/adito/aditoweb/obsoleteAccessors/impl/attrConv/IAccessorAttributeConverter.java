@@ -1,5 +1,7 @@
 package de.adito.aditoweb.obsoleteAccessors.impl.attrConv;
 
+import de.adito.aditoweb.obsoleteAccessors.api.AttributeConversionException;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,6 @@ import java.util.List;
 public interface IAccessorAttributeConverter
 {
 
-  List<IAccessorAttribute> convert(List<IAccessorAttribute> pAttributes);
+  List<IAccessorAttribute> convert(List<IAccessorAttribute> pAttributes) throws AttributeConversionException;
 
 }
