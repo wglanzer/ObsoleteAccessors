@@ -3,15 +3,17 @@ package de.adito.aditoweb.obsoleteAccessors.api;
 import java.util.Objects;
 
 /**
+ * An OAAttribute is mainly used for parameters of methods inside OAAccessors
+ *
  * @author W.Glanzer, 04.09.2017
  */
-public class Parameter
+public class OAAttribute
 {
 
-  private Class<?> type;
-  private Object value;
+  private final Class<?> type;
+  private final Object value;
 
-  public Parameter(Class<?> pType, Object pValue)
+  public OAAttribute(Class<?> pType, Object pValue)
   {
     type = pType;
     value = pValue;
@@ -32,15 +34,24 @@ public class Parameter
   {
     if (this == pO) return true;
     if (pO == null || getClass() != pO.getClass()) return false;
-    Parameter parameter = (Parameter) pO;
-    return Objects.equals(type, parameter.type) &&
-        Objects.equals(value, parameter.value);
+    OAAttribute attribute = (OAAttribute) pO;
+    return Objects.equals(type, attribute.type) &&
+        Objects.equals(value, attribute.value);
   }
 
   @Override
   public int hashCode()
   {
     return Objects.hash(type, value);
+  }
+
+  @Override
+  public String toString()
+  {
+    return "OAAttribute{" +
+        "type=" + type +
+        ", value=" + value +
+        '}';
   }
 
 }

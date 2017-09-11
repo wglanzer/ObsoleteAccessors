@@ -1,6 +1,6 @@
 package de.adito.aditoweb.obsoleteAccessors;
 
-import de.adito.aditoweb.obsoleteAccessors.api.Parameter;
+import de.adito.aditoweb.obsoleteAccessors.api.OAAttribute;
 import de.adito.aditoweb.obsoleteAccessors.spi.*;
 
 import java.util.*;
@@ -31,12 +31,12 @@ public class TestVersionContainerImpl
     return new int[0];
   }
 
-  public static class _IntListToIntArrayConverter implements IParameterConverter
+  public static class _IntListToIntArrayConverter implements IAttributeConverter
   {
     @Override
-    public List<Parameter> convert(List<Parameter> pParameters)
+    public List<OAAttribute> convert(List<OAAttribute> pAttributes)
     {
-      return Collections.singletonList(new Parameter(String.class, String.valueOf(pParameters.get(0).getValue())));
+      return Collections.singletonList(new OAAttribute(String.class, String.valueOf(pAttributes.get(0).getValue())));
     }
   }
 

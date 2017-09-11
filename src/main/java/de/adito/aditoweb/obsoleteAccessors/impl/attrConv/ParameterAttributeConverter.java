@@ -1,8 +1,8 @@
 package de.adito.aditoweb.obsoleteAccessors.impl.attrConv;
 
-import de.adito.aditoweb.obsoleteAccessors.api.Parameter;
+import de.adito.aditoweb.obsoleteAccessors.api.OAAttribute;
 import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.ImmutableAccessorAttributeDescription;
-import de.adito.aditoweb.obsoleteAccessors.spi.IParameterConverter;
+import de.adito.aditoweb.obsoleteAccessors.spi.IAttributeConverter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 public class ParameterAttributeConverter implements IAccessorAttributeConverter
 {
 
-  private final IParameterConverter parameterConverter;
+  private final IAttributeConverter parameterConverter;
 
-  public ParameterAttributeConverter(IParameterConverter pParameterConverter)
+  public ParameterAttributeConverter(IAttributeConverter pParameterConverter)
   {
     parameterConverter = pParameterConverter;
   }
@@ -23,11 +23,11 @@ public class ParameterAttributeConverter implements IAccessorAttributeConverter
   @Override
   public List<IAccessorAttribute> convert(List<IAccessorAttribute> pAttributes)
   {
-    List<Parameter> parameters = new ArrayList<>();
+    List<OAAttribute> attributes = new ArrayList<>();
     for (IAccessorAttribute value : pAttributes)
-      parameters.add(new Parameter(value.getValue().getClass(), value.getValue()));
+      attributes.add(new OAAttribute(value.getValue().getClass(), value.getValue()));
 
-    return parameterConverter.convert(parameters).stream()
+    return parameterConverter.convert(attributes).stream()
         .map(pParameter -> new SimpleAccessorAttribute(new ImmutableAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
         .collect(Collectors.toList());
   }

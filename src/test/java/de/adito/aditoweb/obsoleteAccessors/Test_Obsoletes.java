@@ -14,30 +14,30 @@ public class Test_Obsoletes
   @Test
   public void test_convertSimpleFunction() throws Exception
   {
-    Parameter parameter1 = new Parameter(double.class, 1.5D);
-    Parameter parameter2 = new Parameter(int[].class, new int[]{42, 24, 13});
-    Function function = new Function("container", "getDoubleArr", Arrays.asList(parameter1, parameter2), double[].class);
-    Function convertedFunction = Obsoletes.convert(function, "js");
-    Assert.assertNotNull(convertedFunction);
-    Assert.assertEquals("container", convertedFunction.getPackageName());
-    Assert.assertEquals("getIntArray", convertedFunction.getIdentifier());
-    Assert.assertEquals(int[].class, convertedFunction.getReturnType());
-    Assert.assertEquals(Collections.singletonList(new Parameter(String.class, "1.5")), convertedFunction.getParameters());
+    OAAttribute attribute1 = new OAAttribute(double.class, 1.5D);
+    OAAttribute attribute2 = new OAAttribute(int[].class, new int[]{42, 24, 13});
+    OAAccessor accessor = new OAAccessor("container", "getDoubleArr", Arrays.asList(attribute1, attribute2), double[].class);
+    OAAccessor convertedAccessor = Obsoletes.convert(accessor, "js");
+    Assert.assertNotNull(convertedAccessor);
+    Assert.assertEquals("container", convertedAccessor.getPackageName());
+    Assert.assertEquals("getIntArray", convertedAccessor.getIdentifier());
+    Assert.assertEquals(int[].class, convertedAccessor.getReturnType());
+    Assert.assertEquals(Collections.singletonList(new OAAttribute(String.class, "1.5")), convertedAccessor.getAttributes());
   }
 
   @Test
   public void test_convertSimpleField() throws Exception
   {
     // CLASSIFICATION_PRIVATE with returnType INTEGER
-    Function field = new Function("container", "CLASSIFICATION_PRIVATE", null, int.class);
-    Function classField = Obsoletes.convert(field, "js");
+    OAAccessor field = new OAAccessor("container", "CLASSIFICATION_PRIVATE", null, int.class);
+    OAAccessor classField = Obsoletes.convert(field, "js");
     Assert.assertNotNull(classField);
     Assert.assertEquals("container", classField.getPackageName());
     Assert.assertEquals("CLASSIFICATION_PUBLIC", classField.getIdentifier());
     Assert.assertEquals(String.class, classField.getReturnType());
 
     // CLASSIFICATION_PRIVATE with returnType STRING
-    field = new Function("container", "CLASSIFICATION_PRIVATE", null, String.class);
+    field = new OAAccessor("container", "CLASSIFICATION_PRIVATE", null, String.class);
     classField = Obsoletes.convert(field, "js");
     Assert.assertNotNull(classField);
     Assert.assertEquals("container", classField.getPackageName());

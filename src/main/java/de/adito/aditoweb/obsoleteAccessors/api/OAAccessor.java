@@ -3,21 +3,23 @@ package de.adito.aditoweb.obsoleteAccessors.api;
 import java.util.List;
 
 /**
+ * An OAAccessor represents a method/field annotated with @ObsoleteVersion
+ *
  * @author W.Glanzer, 04.09.2017
  */
-public class Function
+public class OAAccessor
 {
 
-  private String packageName;
-  private String identifier;
-  private List<Parameter> parameters;
-  private Class<?> returnType;
+  private final String packageName;
+  private final String identifier;
+  private final List<OAAttribute> attributes;
+  private final Class<?> returnType;
 
-  public Function(String pPackageName, String pIdentifier, List<Parameter> pParameters, Class<?> pReturnType)
+  public OAAccessor(String pPackageName, String pIdentifier, List<OAAttribute> pAttributes, Class<?> pReturnType)
   {
     packageName = pPackageName;
     identifier = pIdentifier;
-    parameters = pParameters;
+    attributes = pAttributes;
     returnType = pReturnType;
   }
 
@@ -31,9 +33,9 @@ public class Function
     return identifier;
   }
 
-  public List<Parameter> getParameters()
+  public List<OAAttribute> getAttributes()
   {
-    return parameters;
+    return attributes;
   }
 
   public Class<?> getReturnType()
@@ -44,10 +46,10 @@ public class Function
   @Override
   public String toString()
   {
-    return "Function{" +
+    return "OAAccessor{" +
         "packageName='" + packageName + '\'' +
         ", identifier='" + identifier + '\'' +
-        ", parameters=" + parameters +
+        ", attributes=" + attributes +
         ", returnType=" + returnType +
         '}';
   }

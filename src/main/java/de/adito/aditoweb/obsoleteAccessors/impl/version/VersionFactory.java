@@ -2,7 +2,6 @@ package de.adito.aditoweb.obsoleteAccessors.impl.version;
 
 import com.google.common.base.Strings;
 import de.adito.aditoweb.obsoleteAccessors.api.*;
-import de.adito.aditoweb.obsoleteAccessors.api.Parameter;
 import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.*;
 import de.adito.aditoweb.obsoleteAccessors.spi.*;
 import org.jetbrains.annotations.Nullable;
@@ -35,9 +34,9 @@ public class VersionFactory
     return _createVersion(pContainer, pReflField.getName(), pReflField.getType(), null, pReflField.getDeclaredAnnotations());
   }
 
-  public static IAccessorVersion createVersion(Function pFunction)
+  public static IAccessorVersion createVersion(OAAccessor pAccessor)
   {
-    return new _AccessorVersionWrapper(pFunction);
+    return new _AccessorVersionWrapper(pAccessor);
   }
 
   private static IAccessorVersion[] _createVersion(ObsoleteVersionContainer pContainer, String pLatestName, Class<?> pLatestType,
@@ -138,18 +137,18 @@ public class VersionFactory
   private static boolean _isDefaultValue(Object pValue)
   {
     return (pValue instanceof String && Strings.isNullOrEmpty((String) pValue)) ||
-        pValue instanceof Class<?> && (pValue.equals(Void.class) || pValue.equals(IParameterConverter.DEFAULT.class)) ||
+        pValue instanceof Class<?> && (pValue.equals(Void.class) || pValue.equals(IAttributeConverter.DEFAULT.class)) ||
         (pValue != null && pValue.getClass().isArray() && Arrays.equals((Object[]) pValue, new Class<?>[]{Void.class})) ||
         pValue == null;
   }
 
-  public static List<IAccessorAttributeDescription<?>> createAttributes(List<Parameter> pParameters) //todo
+  public static List<IAccessorAttributeDescription<?>> createAttributes(List<OAAttribute> pAttributes) //todo
   {
-    if(pParameters == null || pParameters.isEmpty())
+    if(pAttributes == null || pAttributes.isEmpty())
       return Collections.emptyList();
-    ArrayList<IAccessorAttributeDescription<?>> attributes = new ArrayList<>(pParameters.size());
-    for (Parameter parameter : pParameters)
-      attributes.add(new ImmutableAccessorAttributeDescription<>(parameter.getType()));
+    ArrayList<IAccessorAttributeDescription<?>> attributes = new ArrayList<>(pAttributes.size());
+    for (OAAttribute attribute : pAttributes)
+      attributes.add(new ImmutableAccessorAttributeDescription<>(attribute.getType()));
     return attributes;
   }
 
@@ -158,9 +157,9 @@ public class VersionFactory
    */
   private static class _AccessorVersionWrapper extends AbstractAccessorVersion
   {
-    public _AccessorVersionWrapper(Function pFunction)
+    public _AccessorVersionWrapper(OAAccessor pAccessor)
     {
-      super(-1, pFunction.getPackageName(), pFunction.getIdentifier(), pFunction.getReturnType(), createAttributes(pFunction.getParameters()));
+      super(-1, pAccessor.getPackageName(), pAccessor.getIdentifier(), pAccessor.getReturnType(), createAttributes(pAccessor.getAttributes()));
     }
   }
 

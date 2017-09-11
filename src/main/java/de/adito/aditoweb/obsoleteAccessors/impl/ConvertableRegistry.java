@@ -56,7 +56,7 @@ class ConvertableRegistry
   }
 
   @Nullable
-  public Function find(String pCategory, String pPkgName, Function pFunctionToFind)
+  public OAAccessor find(String pCategory, String pPkgName, OAAccessor pAccessorToFind)
   {
     Map<String, Map<IAccessorVersion[], IAccessorVersion>> category = _CONVERSIONMAP.get(pCategory);
     if(category == null)
@@ -65,7 +65,7 @@ class ConvertableRegistry
     if(pkg == null)
       throw new RuntimeException("Package not found");
 
-    IAccessorVersion accessor = VersionFactory.createVersion(pFunctionToFind);
+    IAccessorVersion accessor = VersionFactory.createVersion(pAccessorToFind);
 
     for (Map.Entry<IAccessorVersion[], IAccessorVersion> entry : pkg.entrySet())
     {
@@ -80,7 +80,7 @@ class ConvertableRegistry
           ProxyAttributeConverter converter = new ProxyAttributeConverter(Arrays.stream(allVersionsAfter)
                                                                                             .map(IAccessorVersion::getConverter)
                                                                                             .toArray(IAccessorAttributeConverter[]::new));
-          return _createFunction(entry.getValue(), converter, pFunctionToFind);
+          return _createFunction(entry.getValue(), converter, pAccessorToFind);
         }
       }
     }
@@ -88,18 +88,18 @@ class ConvertableRegistry
     return null;
   }
 
-  private Function _createFunction(IAccessorVersion pLatestVersion, IAccessorAttributeConverter pAttributeConverter, Function pOldFunction)
+  private OAAccessor _createFunction(IAccessorVersion pLatestVersion, IAccessorAttributeConverter pAttributeConverter, OAAccessor pOldAccessor)
   {
-    List<Parameter> parameters = pOldFunction.getParameters();
-    List<IAccessorAttribute> oldParameters = parameters != null ? parameters.stream()
+    List<OAAttribute> attributes = pOldAccessor.getAttributes();
+    List<IAccessorAttribute> oldParameters = attributes != null ? attributes.stream()
         .map(pParameter -> new SimpleAccessorAttribute(new ImmutableAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
         .collect(Collectors.toList()) : Collections.emptyList();
     List<IAccessorAttribute> convertedParameters = pAttributeConverter.convert(oldParameters);
-    List<Parameter> params = convertedParameters.stream()
-        .map(pAttribute -> new Parameter(pAttribute.getDescription().getType(), pAttribute.getValue()))
+    List<OAAttribute> params = convertedParameters.stream()
+        .map(pAttribute -> new OAAttribute(pAttribute.getDescription().getType(), pAttribute.getValue()))
         .collect(Collectors.toList());
 
-    return new Function(pLatestVersion.getPkgName(), pLatestVersion.getId(), params, pLatestVersion.getType());
+    return new OAAccessor(pLatestVersion.getPkgName(), pLatestVersion.getId(), params, pLatestVersion.getType());
   }
 
 }
