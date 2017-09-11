@@ -1,5 +1,6 @@
 package de.adito.aditoweb.obsoleteAccessors.impl.version;
 
+import de.adito.aditoweb.obsoleteAccessors.impl.attrConv.IAccessorAttributeConverter;
 import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.IAccessorAttributeDescription;
 
 import java.util.*;
@@ -20,6 +21,8 @@ public interface IAccessorVersion
   Class<?> getType();
 
   List<IAccessorAttributeDescription<?>> getAttributeDescriptions();
+
+  IAccessorAttributeConverter getConverter();
 
   default boolean equalTo(IAccessorVersion pVersion)
   {

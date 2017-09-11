@@ -1,6 +1,8 @@
 package de.adito.aditoweb.obsoleteAccessors.impl;
 
 import de.adito.aditoweb.obsoleteAccessors.api.*;
+import de.adito.aditoweb.obsoleteAccessors.impl.attrConv.*;
+import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.ImmutableAccessorAttributeDescription;
 import de.adito.aditoweb.obsoleteAccessors.impl.version.*;
 import de.adito.aditoweb.obsoleteAccessors.spi.*;
 import de.adito.picoservice.IPicoRegistry;
@@ -67,21 +69,34 @@ class ConvertableRegistry
 
     for (Map.Entry<IAccessorVersion[], IAccessorVersion> entry : pkg.entrySet())
     {
-      for (IAccessorVersion obsoleteVersion : entry.getKey())
+      IAccessorVersion[] key = entry.getKey();
+      for (int i = 0; i < key.length; i++)
       {
-        if(accessor.equalTo(obsoleteVersion))
-          return _createFunction(entry.getValue(), pFunctionToFind);
+        IAccessorVersion obsoleteVersion = key[i];
+        if (accessor.equalTo(obsoleteVersion))
+        {
+          IAccessorVersion[] allVersionsAfter = new IAccessorVersion[key.length - i - 1];
+          System.arraycopy(key, i, allVersionsAfter, 0, key.length - i - 1);
+          ProxyAttributeConverter converter = new ProxyAttributeConverter(Arrays.stream(allVersionsAfter)
+                                                                                            .map(IAccessorVersion::getConverter)
+                                                                                            .toArray(IAccessorAttributeConverter[]::new));
+          return _createFunction(entry.getValue(), converter, pFunctionToFind);
+        }
       }
     }
 
     return null;
   }
 
-  private Function _createFunction(IAccessorVersion pLatestVersion, Function pOldFunction)
+  private Function _createFunction(IAccessorVersion pLatestVersion, IAccessorAttributeConverter pAttributeConverter, Function pOldFunction)
   {
-    //todo Converter
-    List<Parameter> params = pLatestVersion.getAttributeDescriptions().stream()
-        .map(pDescription -> new Parameter(pDescription.getType(), null))
+    List<Parameter> parameters = pOldFunction.getParameters();
+    List<IAccessorAttribute> oldParameters = parameters != null ? parameters.stream()
+        .map(pParameter -> new SimpleAccessorAttribute(new ImmutableAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
+        .collect(Collectors.toList()) : Collections.emptyList();
+    List<IAccessorAttribute> convertedParameters = pAttributeConverter.convert(oldParameters);
+    List<Parameter> params = convertedParameters.stream()
+        .map(pAttribute -> new Parameter(pAttribute.getDescription().getType(), pAttribute.getValue()))
         .collect(Collectors.toList());
 
     return new Function(pLatestVersion.getPkgName(), pLatestVersion.getId(), params, pLatestVersion.getType());

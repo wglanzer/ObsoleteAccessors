@@ -1,5 +1,6 @@
 package de.adito.aditoweb.obsoleteAccessors.impl.version;
 
+import de.adito.aditoweb.obsoleteAccessors.impl.attrConv.*;
 import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.IAccessorAttributeDescription;
 import de.adito.aditoweb.obsoleteAccessors.spi.IParameterConverter;
 
@@ -17,6 +18,20 @@ class ObsoleteAccessorVersion extends AbstractAccessorVersion
   {
     super(pVersion, pPkgName, pId, pType, pAttributeDescriptions);
     converter = pConverter;
+  }
+
+  @Override
+  public IAccessorAttributeConverter getConverter()
+  {
+    try
+    {
+      IParameterConverter paramConv = converter.newInstance();
+      return new ParameterAttributeConverter(paramConv);
+    }
+    catch (Exception e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 
 }

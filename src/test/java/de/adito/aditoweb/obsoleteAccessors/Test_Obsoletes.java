@@ -23,7 +23,7 @@ public class Test_Obsoletes
     Assert.assertEquals("container", convertedFunction.getPackageName());
     Assert.assertEquals("getIntArray", convertedFunction.getIdentifier());
     Assert.assertEquals(int[].class, convertedFunction.getReturnType());
-    Assert.assertEquals(Collections.singletonList(new Parameter(String.class, null)), convertedFunction.getParameters());
+    Assert.assertEquals(Collections.singletonList(new Parameter(String.class, "1.5")), convertedFunction.getParameters());
   }
 
   @Test
@@ -61,11 +61,20 @@ public class Test_Obsoletes
 
     @ObsoleteVersions({
         @ObsoleteVersion(version = 0, id = "getDoubleArr", type = double[].class),
-        @ObsoleteVersion(version = 1, id = "getIntList", parameters = {double.class, int[].class})
+        @ObsoleteVersion(version = 1, id = "getIntList", parameters = {double.class, int[].class}, converter = _IntListToIntArrayConverter.class)
     })
     public int[] getIntArray(String pParam)
     {
       return new int[0];
+    }
+
+    public static class _IntListToIntArrayConverter implements IParameterConverter
+    {
+      @Override
+      public List<Parameter> convert(List<Parameter> pParameters)
+      {
+        return Collections.singletonList(new Parameter(String.class, String.valueOf(pParameters.get(0).getValue())));
+      }
     }
 
   }
