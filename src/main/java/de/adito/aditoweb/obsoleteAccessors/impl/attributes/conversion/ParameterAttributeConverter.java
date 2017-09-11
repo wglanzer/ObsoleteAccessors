@@ -5,7 +5,7 @@ import de.adito.aditoweb.obsoleteAccessors.impl.attributes.*;
 import de.adito.aditoweb.obsoleteAccessors.spi.IAttributeConverter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -26,16 +26,16 @@ public class ParameterAttributeConverter implements IAccessorAttributeConverter
   public List<IAccessorAttribute> convert(@NotNull List<IAccessorAttribute> pAttributes) throws AttributeConversionException
   {
     // Wrap IAA -> OAA
-    List<OAAttribute> attributes = new ArrayList<>();
-    for (IAccessorAttribute value : pAttributes)
-      attributes.add(new OAAttribute(value.getValue().getClass(), value.getValue()));
+    List<OAAttribute> attributes = pAttributes.stream()
+        .map(pAttribute -> new OAAttribute(pAttribute.getDescription().getType(), pAttribute.getValue()))
+        .collect(Collectors.toList());
 
     // Convert
     List<OAAttribute> converted = parameterConverter.convert(attributes);
 
     // Wrap OAA -> IAA
     return converted.stream()
-        .map(pParameter -> new SimpleAccessorAttribute(new SimpleAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
+        .map(SimpleAccessorAttribute::of)
         .collect(Collectors.toList());
   }
 

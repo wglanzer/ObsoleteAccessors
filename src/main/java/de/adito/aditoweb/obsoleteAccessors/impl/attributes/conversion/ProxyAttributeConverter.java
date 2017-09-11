@@ -22,10 +22,7 @@ public class ProxyAttributeConverter implements IAccessorAttributeConverter
   public List<IAccessorAttribute> convert(List<IAccessorAttribute> pAttributes) throws AttributeConversionException
   {
     for (IAccessorAttributeConverter converter : converters)
-    {
-      if(converter != null)
-        pAttributes = converter.convert(pAttributes);
-    }
+      pAttributes = converter.convert(pAttributes);
     return pAttributes;
   }
 

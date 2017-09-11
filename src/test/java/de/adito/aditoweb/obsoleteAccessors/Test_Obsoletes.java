@@ -21,7 +21,7 @@ public class Test_Obsoletes
     Assert.assertNotNull(convertedAccessor);
     Assert.assertEquals("container", convertedAccessor.getPackageName());
     Assert.assertEquals("getIntArray", convertedAccessor.getIdentifier());
-    Assert.assertEquals(int[].class, convertedAccessor.getReturnType());
+    Assert.assertEquals(int[].class, convertedAccessor.getType());
     Assert.assertEquals(Collections.singletonList(new OAAttribute(String.class, "1.5")), convertedAccessor.getAttributes());
   }
 
@@ -34,7 +34,7 @@ public class Test_Obsoletes
     Assert.assertNotNull(classField);
     Assert.assertEquals("container", classField.getPackageName());
     Assert.assertEquals("CLASSIFICATION_PUBLIC", classField.getIdentifier());
-    Assert.assertEquals(String.class, classField.getReturnType());
+    Assert.assertEquals(String.class, classField.getType());
 
     // CLASSIFICATION_PRIVATE with returnType STRING
     field = new OAAccessor("container", "CLASSIFICATION_PRIVATE", null, String.class);
@@ -42,7 +42,7 @@ public class Test_Obsoletes
     Assert.assertNotNull(classField);
     Assert.assertEquals("container", classField.getPackageName());
     Assert.assertEquals("CLASSIFICATION_PUBLIC_STRING", classField.getIdentifier());
-    Assert.assertEquals(String.class, classField.getReturnType());
+    Assert.assertEquals(String.class, classField.getType());
   }
 
 }

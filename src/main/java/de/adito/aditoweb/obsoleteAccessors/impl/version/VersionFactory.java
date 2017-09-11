@@ -3,6 +3,7 @@ package de.adito.aditoweb.obsoleteAccessors.impl.version;
 import com.google.common.base.Strings;
 import de.adito.aditoweb.obsoleteAccessors.api.*;
 import de.adito.aditoweb.obsoleteAccessors.impl.attributes.*;
+import de.adito.aditoweb.obsoleteAccessors.impl.util.NotChangedType;
 import de.adito.aditoweb.obsoleteAccessors.spi.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +24,7 @@ public class VersionFactory
   public static IAccessorVersion[] createVersion(ObsoleteVersionContainer pContainer, Method pReflMethod)
   {
     List<IAccessorAttributeDescription<?>> descriptions = Stream.of(pReflMethod.getParameters())
-        .map(pParameter -> new SimpleAccessorAttributeDescription<>(pParameter.getType()))
+        .map(pParameter -> SimpleAccessorAttributeDescription.of(new OAAttribute(pParameter.getType(), null)))
         .collect(Collectors.toList());
 
     return _createVersion(pContainer, pReflMethod.getName(), pReflMethod.getReturnType(), descriptions, pReflMethod.getDeclaredAnnotations());
@@ -75,8 +76,8 @@ public class VersionFactory
       if(parameters != null)
       {
         attributeDescriptions = new ArrayList<>();
-        for (Class<?> parameter : parameters)
-          attributeDescriptions.add(new SimpleAccessorAttributeDescription<>(parameter));
+        for (Class<?> clazz : parameters)
+          attributeDescriptions.add(SimpleAccessorAttributeDescription.of(new OAAttribute(clazz, null)));
       }
       else
         attributeDescriptions = pLatest.getAttributeDescriptions();
@@ -138,18 +139,8 @@ public class VersionFactory
   {
     return (pValue instanceof String && Strings.isNullOrEmpty((String) pValue)) ||
         pValue instanceof Class<?> && (pValue.equals(Void.class) || pValue.equals(IAttributeConverter.DEFAULT.class)) ||
-        (pValue != null && pValue.getClass().isArray() && Arrays.equals((Object[]) pValue, new Class<?>[]{Void.class})) ||
+        (pValue != null && pValue.getClass().isArray() && Arrays.equals((Object[]) pValue, new Class<?>[]{NotChangedType.class})) ||
         pValue == null;
-  }
-
-  public static List<IAccessorAttributeDescription<?>> createAttributes(List<OAAttribute> pAttributes) //todo
-  {
-    if(pAttributes == null || pAttributes.isEmpty())
-      return Collections.emptyList();
-    ArrayList<IAccessorAttributeDescription<?>> attributes = new ArrayList<>(pAttributes.size());
-    for (OAAttribute attribute : pAttributes)
-      attributes.add(new SimpleAccessorAttributeDescription<>(attribute.getType()));
-    return attributes;
   }
 
   /**
@@ -159,7 +150,9 @@ public class VersionFactory
   {
     public _AccessorVersionWrapper(OAAccessor pAccessor)
     {
-      super(-1, pAccessor.getPackageName(), pAccessor.getIdentifier(), pAccessor.getReturnType(), createAttributes(pAccessor.getAttributes()));
+      super(-1, pAccessor.getPackageName(), pAccessor.getIdentifier(), pAccessor.getType(), pAccessor.getAttributes().stream()
+          .map(SimpleAccessorAttributeDescription::of)
+          .collect(Collectors.toList()));
     }
   }
 

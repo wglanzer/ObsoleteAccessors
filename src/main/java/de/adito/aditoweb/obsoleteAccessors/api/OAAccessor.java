@@ -1,6 +1,8 @@
 package de.adito.aditoweb.obsoleteAccessors.api;
 
-import java.util.List;
+import org.jetbrains.annotations.*;
+
+import java.util.*;
 
 /**
  * An OAAccessor represents a method/field annotated with @ObsoleteVersion
@@ -13,14 +15,14 @@ public class OAAccessor
   private final String packageName;
   private final String identifier;
   private final List<OAAttribute> attributes;
-  private final Class<?> returnType;
+  private final Class<?> type;
 
-  public OAAccessor(String pPackageName, String pIdentifier, List<OAAttribute> pAttributes, Class<?> pReturnType)
+  public OAAccessor(@NotNull String pPackageName, @NotNull String pIdentifier, @Nullable List<OAAttribute> pAttributes, @NotNull Class<?> pType)
   {
     packageName = pPackageName;
     identifier = pIdentifier;
-    attributes = pAttributes;
-    returnType = pReturnType;
+    attributes = pAttributes == null ? Collections.emptyList() : pAttributes;
+    type = pType;
   }
 
   public String getPackageName()
@@ -33,14 +35,15 @@ public class OAAccessor
     return identifier;
   }
 
+  @NotNull
   public List<OAAttribute> getAttributes()
   {
     return attributes;
   }
 
-  public Class<?> getReturnType()
+  public Class<?> getType()
   {
-    return returnType;
+    return type;
   }
 
   @Override
@@ -50,7 +53,7 @@ public class OAAccessor
         "packageName='" + packageName + '\'' +
         ", identifier='" + identifier + '\'' +
         ", attributes=" + attributes +
-        ", returnType=" + returnType +
+        ", type=" + type +
         '}';
   }
 }

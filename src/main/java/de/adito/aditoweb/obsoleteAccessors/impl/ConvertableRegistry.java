@@ -75,11 +75,11 @@ class ConvertableRegistry
         IAccessorVersion obsoleteVersion = key[i];
         if (accessor.equalTo(obsoleteVersion))
         {
-          IAccessorVersion[] allVersionsAfter = new IAccessorVersion[key.length - i - 1];
-          System.arraycopy(key, i, allVersionsAfter, 0, key.length - i - 1);
-          ProxyAttributeConverter converter = new ProxyAttributeConverter(Arrays.stream(allVersionsAfter)
-                                                                                            .map(IAccessorVersion::getConverter)
-                                                                                            .toArray(IAccessorAttributeConverter[]::new));
+          IAccessorAttributeConverter[] converters = Arrays.stream(key, i, key.length - 1)
+              .filter(Objects::nonNull)
+              .map(IAccessorVersion::getConverter)
+              .toArray(IAccessorAttributeConverter[]::new);
+          ProxyAttributeConverter converter = new ProxyAttributeConverter(converters);
           return _createFunction(entry.getValue(), converter, pAccessorToFind);
         }
       }
@@ -95,9 +95,9 @@ class ConvertableRegistry
     try
     {
       List<OAAttribute> attributes = pOldAccessor.getAttributes();
-      List<IAccessorAttribute> oldParameters = attributes != null ? attributes.stream()
-          .map(pParameter -> new SimpleAccessorAttribute(new SimpleAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
-          .collect(Collectors.toList()) : Collections.emptyList();
+      List<IAccessorAttribute> oldParameters = attributes.stream()
+                .map(SimpleAccessorAttribute::of)
+                .collect(Collectors.toList());
       List<IAccessorAttribute> convertedParameters = pAttributeConverter.convert(oldParameters);
       params = convertedParameters.stream()
           .map(pAttribute -> new OAAttribute(pAttribute.getDescription().getType(), pAttribute.getValue()))
