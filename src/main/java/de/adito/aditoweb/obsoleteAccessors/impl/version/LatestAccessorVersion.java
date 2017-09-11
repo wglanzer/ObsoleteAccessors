@@ -1,6 +1,6 @@
 package de.adito.aditoweb.obsoleteAccessors.impl.version;
 
-import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.IAccessorAttributeDescription;
+import de.adito.aditoweb.obsoleteAccessors.impl.attributes.IAccessorAttributeDescription;
 
 import java.util.List;
 

@@ -1,6 +1,4 @@
-package de.adito.aditoweb.obsoleteAccessors.impl.attrConv;
-
-import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.IAccessorAttributeDescription;
+package de.adito.aditoweb.obsoleteAccessors.impl.attributes;
 
 /**
  * @author W.Glanzer, 11.09.2017

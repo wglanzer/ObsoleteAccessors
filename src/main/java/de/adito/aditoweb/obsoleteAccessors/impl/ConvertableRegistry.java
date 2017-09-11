@@ -1,8 +1,8 @@
 package de.adito.aditoweb.obsoleteAccessors.impl;
 
 import de.adito.aditoweb.obsoleteAccessors.api.*;
-import de.adito.aditoweb.obsoleteAccessors.impl.attrConv.*;
-import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.ImmutableAccessorAttributeDescription;
+import de.adito.aditoweb.obsoleteAccessors.impl.attributes.*;
+import de.adito.aditoweb.obsoleteAccessors.impl.attributes.conversion.*;
 import de.adito.aditoweb.obsoleteAccessors.impl.version.*;
 import de.adito.aditoweb.obsoleteAccessors.spi.*;
 import de.adito.picoservice.IPicoRegistry;
@@ -96,7 +96,7 @@ class ConvertableRegistry
     {
       List<OAAttribute> attributes = pOldAccessor.getAttributes();
       List<IAccessorAttribute> oldParameters = attributes != null ? attributes.stream()
-          .map(pParameter -> new SimpleAccessorAttribute(new ImmutableAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
+          .map(pParameter -> new SimpleAccessorAttribute(new SimpleAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
           .collect(Collectors.toList()) : Collections.emptyList();
       List<IAccessorAttribute> convertedParameters = pAttributeConverter.convert(oldParameters);
       params = convertedParameters.stream()

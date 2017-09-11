@@ -2,7 +2,7 @@ package de.adito.aditoweb.obsoleteAccessors.impl.version;
 
 import com.google.common.base.Strings;
 import de.adito.aditoweb.obsoleteAccessors.api.*;
-import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.*;
+import de.adito.aditoweb.obsoleteAccessors.impl.attributes.*;
 import de.adito.aditoweb.obsoleteAccessors.spi.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ public class VersionFactory
   public static IAccessorVersion[] createVersion(ObsoleteVersionContainer pContainer, Method pReflMethod)
   {
     List<IAccessorAttributeDescription<?>> descriptions = Stream.of(pReflMethod.getParameters())
-        .map(pParameter -> new ImmutableAccessorAttributeDescription<>(pParameter.getType()))
+        .map(pParameter -> new SimpleAccessorAttributeDescription<>(pParameter.getType()))
         .collect(Collectors.toList());
 
     return _createVersion(pContainer, pReflMethod.getName(), pReflMethod.getReturnType(), descriptions, pReflMethod.getDeclaredAnnotations());
@@ -76,7 +76,7 @@ public class VersionFactory
       {
         attributeDescriptions = new ArrayList<>();
         for (Class<?> parameter : parameters)
-          attributeDescriptions.add(new ImmutableAccessorAttributeDescription<>(parameter));
+          attributeDescriptions.add(new SimpleAccessorAttributeDescription<>(parameter));
       }
       else
         attributeDescriptions = pLatest.getAttributeDescriptions();
@@ -148,7 +148,7 @@ public class VersionFactory
       return Collections.emptyList();
     ArrayList<IAccessorAttributeDescription<?>> attributes = new ArrayList<>(pAttributes.size());
     for (OAAttribute attribute : pAttributes)
-      attributes.add(new ImmutableAccessorAttributeDescription<>(attribute.getType()));
+      attributes.add(new SimpleAccessorAttributeDescription<>(attribute.getType()));
     return attributes;
   }
 

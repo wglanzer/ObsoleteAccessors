@@ -1,7 +1,7 @@
 package de.adito.aditoweb.obsoleteAccessors.impl.version;
 
-import de.adito.aditoweb.obsoleteAccessors.impl.attrConv.*;
-import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.IAccessorAttributeDescription;
+import de.adito.aditoweb.obsoleteAccessors.impl.attributes.IAccessorAttributeDescription;
+import de.adito.aditoweb.obsoleteAccessors.impl.attributes.conversion.*;
 import de.adito.aditoweb.obsoleteAccessors.spi.IAttributeConverter;
 
 import java.util.List;

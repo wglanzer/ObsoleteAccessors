@@ -1,7 +1,7 @@
-package de.adito.aditoweb.obsoleteAccessors.impl.attrConv;
+package de.adito.aditoweb.obsoleteAccessors.impl.attributes.conversion;
 
 import de.adito.aditoweb.obsoleteAccessors.api.*;
-import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.ImmutableAccessorAttributeDescription;
+import de.adito.aditoweb.obsoleteAccessors.impl.attributes.*;
 import de.adito.aditoweb.obsoleteAccessors.spi.IAttributeConverter;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,7 +35,7 @@ public class ParameterAttributeConverter implements IAccessorAttributeConverter
 
     // Wrap OAA -> IAA
     return converted.stream()
-        .map(pParameter -> new SimpleAccessorAttribute(new ImmutableAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
+        .map(pParameter -> new SimpleAccessorAttribute(new SimpleAccessorAttributeDescription(pParameter.getType()), pParameter.getValue()))
         .collect(Collectors.toList());
   }
 
