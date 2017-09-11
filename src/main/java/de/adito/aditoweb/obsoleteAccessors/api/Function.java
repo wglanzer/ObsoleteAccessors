@@ -1,6 +1,6 @@
 package de.adito.aditoweb.obsoleteAccessors.api;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author W.Glanzer, 04.09.2017
@@ -10,10 +10,10 @@ public class Function
 
   private String packageName;
   private String identifier;
-  private Object[] parameters;
+  private List<Parameter> parameters;
   private Class<?> returnType;
 
-  public Function(String pPackageName, String pIdentifier, Object[] pParameters, Class<?> pReturnType)
+  public Function(String pPackageName, String pIdentifier, List<Parameter> pParameters, Class<?> pReturnType)
   {
     packageName = pPackageName;
     identifier = pIdentifier;
@@ -31,7 +31,7 @@ public class Function
     return identifier;
   }
 
-  public Object[] getParameters()
+  public List<Parameter> getParameters()
   {
     return parameters;
   }
@@ -47,7 +47,7 @@ public class Function
     return "Function{" +
         "packageName='" + packageName + '\'' +
         ", identifier='" + identifier + '\'' +
-        ", parameters=" + Arrays.toString(parameters) +
+        ", parameters=" + parameters +
         ", returnType=" + returnType +
         '}';
   }

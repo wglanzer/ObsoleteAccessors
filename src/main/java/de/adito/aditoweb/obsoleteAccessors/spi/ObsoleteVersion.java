@@ -9,7 +9,8 @@ public @interface ObsoleteVersion
   int version();
   String pkgName() default "";
   String id() default "";
+  Class<?>[] parameters() default Void.class;
   Class<? extends IParameterConverter> converter() default IParameterConverter.DEFAULT.class;
-  Class<?> type() default Object.class;
+  Class<?> type() default Void.class;
 
 }

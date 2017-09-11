@@ -1,6 +1,6 @@
 package de.adito.aditoweb.obsoleteAccessors.impl;
 
-import de.adito.aditoweb.obsoleteAccessors.api.Function;
+import de.adito.aditoweb.obsoleteAccessors.api.*;
 import de.adito.aditoweb.obsoleteAccessors.impl.version.*;
 import de.adito.aditoweb.obsoleteAccessors.spi.*;
 import de.adito.picoservice.IPicoRegistry;
@@ -54,7 +54,7 @@ class ConvertableRegistry
   }
 
   @Nullable
-  public Function find(String pCategory, String pPkgName, Function pIAccessorVersion)
+  public Function find(String pCategory, String pPkgName, Function pFunctionToFind)
   {
     Map<String, Map<IAccessorVersion[], IAccessorVersion>> category = _CONVERSIONMAP.get(pCategory);
     if(category == null)
@@ -63,23 +63,28 @@ class ConvertableRegistry
     if(pkg == null)
       throw new RuntimeException("Package not found");
 
-    IAccessorVersion accessor = VersionFactory.createVersion(pIAccessorVersion);
+    IAccessorVersion accessor = VersionFactory.createVersion(pFunctionToFind);
 
     for (Map.Entry<IAccessorVersion[], IAccessorVersion> entry : pkg.entrySet())
     {
       for (IAccessorVersion obsoleteVersion : entry.getKey())
       {
         if(accessor.equalTo(obsoleteVersion))
-          return _createFunction(entry.getValue());
+          return _createFunction(entry.getValue(), pFunctionToFind);
       }
     }
 
     return null;
   }
 
-  private Function _createFunction(IAccessorVersion pVersion)
+  private Function _createFunction(IAccessorVersion pLatestVersion, Function pOldFunction)
   {
-    return new Function(pVersion.getPkgName(), pVersion.getId(), null, pVersion.getType());
+    //todo Converter
+    List<Parameter> params = pLatestVersion.getAttributeDescriptions().stream()
+        .map(pDescription -> new Parameter(pDescription.getType(), null))
+        .collect(Collectors.toList());
+
+    return new Function(pLatestVersion.getPkgName(), pLatestVersion.getId(), params, pLatestVersion.getType());
   }
 
 }

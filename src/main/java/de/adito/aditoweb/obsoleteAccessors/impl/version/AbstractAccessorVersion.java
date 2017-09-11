@@ -1,5 +1,9 @@
 package de.adito.aditoweb.obsoleteAccessors.impl.version;
 
+import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.IAccessorAttributeDescription;
+
+import java.util.*;
+
 /**
  * @author W.Glanzer, 08.09.2017
  */
@@ -10,13 +14,15 @@ abstract class AbstractAccessorVersion implements IAccessorVersion
   private final String pkgName;
   private final String id;
   private final Class<?> type;
+  private final List<IAccessorAttributeDescription<?>> attributeDescriptions;
 
-  public AbstractAccessorVersion(int pVersion, String pPkgName, String pID, Class<?> pType)
+  public AbstractAccessorVersion(int pVersion, String pPkgName, String pID, Class<?> pType, List<IAccessorAttributeDescription<?>> pAttributeDescriptions)
   {
     version = pVersion;
     pkgName = pPkgName;
     id = pID;
     type = pType;
+    attributeDescriptions = pAttributeDescriptions == null ? Collections.emptyList() : pAttributeDescriptions;
   }
 
   @Override
@@ -41,6 +47,12 @@ abstract class AbstractAccessorVersion implements IAccessorVersion
   public Class<?> getType()
   {
     return type;
+  }
+
+  @Override
+  public List<IAccessorAttributeDescription<?>> getAttributeDescriptions()
+  {
+    return attributeDescriptions;
   }
 
 }

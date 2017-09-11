@@ -1,7 +1,9 @@
 package de.adito.aditoweb.obsoleteAccessors.impl.version;
 
 import com.google.common.base.Strings;
-import de.adito.aditoweb.obsoleteAccessors.api.Function;
+import de.adito.aditoweb.obsoleteAccessors.api.*;
+import de.adito.aditoweb.obsoleteAccessors.api.Parameter;
+import de.adito.aditoweb.obsoleteAccessors.impl.attrDescr.*;
 import de.adito.aditoweb.obsoleteAccessors.spi.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,6 +11,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.*;
 
 /**
  * Factory creating IAccessorVersions
@@ -20,12 +23,16 @@ public class VersionFactory
 
   public static IAccessorVersion[] createVersion(ObsoleteVersionContainer pContainer, Method pReflMethod)
   {
-    return _createVersion(pContainer, pReflMethod.getName(), pReflMethod.getReturnType(), pReflMethod.getDeclaredAnnotations());
+    List<IAccessorAttributeDescription<?>> descriptions = Stream.of(pReflMethod.getParameters())
+        .map(pParameter -> new ImmutableAccessorAttributeDescription<>(pParameter.getType()))
+        .collect(Collectors.toList());
+
+    return _createVersion(pContainer, pReflMethod.getName(), pReflMethod.getReturnType(), descriptions, pReflMethod.getDeclaredAnnotations());
   }
 
   public static IAccessorVersion[] createVersion(ObsoleteVersionContainer pContainer, Field pReflField)
   {
-    return _createVersion(pContainer, pReflField.getName(), pReflField.getType(), pReflField.getDeclaredAnnotations());
+    return _createVersion(pContainer, pReflField.getName(), pReflField.getType(), null, pReflField.getDeclaredAnnotations());
   }
 
   public static IAccessorVersion createVersion(Function pFunction)
@@ -33,9 +40,10 @@ public class VersionFactory
     return new _AccessorVersionWrapper(pFunction);
   }
 
-  private static IAccessorVersion[] _createVersion(ObsoleteVersionContainer pContainer, String pName, Class<?> pType, Annotation[] pAnnotations)
+  private static IAccessorVersion[] _createVersion(ObsoleteVersionContainer pContainer, String pLatestName, Class<?> pLatestType,
+                                                   List<IAccessorAttributeDescription<?>> pLatestDescriptions, Annotation[] pAnnotations)
   {
-    LatestAccessorVersion latest = new LatestAccessorVersion(pContainer.pkgName(), pName, pType);
+    LatestAccessorVersion latest = new LatestAccessorVersion(pContainer.pkgName(), pLatestName, pLatestType, pLatestDescriptions);
     IAccessorVersion[] obsoleteVersions = _createVersion(pAnnotations, latest);
     IAccessorVersion[] versions = new IAccessorVersion[obsoleteVersions.length + 1];
     System.arraycopy(obsoleteVersions, 0, versions, 0, obsoleteVersions.length);
@@ -63,7 +71,18 @@ public class VersionFactory
       String pkgName = extract(version, ObsoleteVersion::pkgName, obsoleteVersionsList, i + 1, pLatest::getPkgName);
       String id = extract(version, ObsoleteVersion::id, obsoleteVersionsList, i + 1, pLatest::getId);
       Class<?> type = extract(version, ObsoleteVersion::type, obsoleteVersionsList, i + 1, pLatest::getType);
-      versions[i] = new ObsoleteAccessorVersion(version.version(), pkgName, id, version.converter(), type);
+      Class<?>[] parameters = extract(version, ObsoleteVersion::parameters, obsoleteVersionsList, i + 1, () -> null);
+      List<IAccessorAttributeDescription<?>> attributeDescriptions;
+      if(parameters != null)
+      {
+        attributeDescriptions = new ArrayList<>();
+        for (Class<?> parameter : parameters)
+          attributeDescriptions.add(new ImmutableAccessorAttributeDescription<>(parameter));
+      }
+      else
+        attributeDescriptions = pLatest.getAttributeDescriptions();
+
+      versions[i] = new ObsoleteAccessorVersion(version.version(), pkgName, id, version.converter(), type, attributeDescriptions);
     }
 
     return versions;
@@ -119,8 +138,19 @@ public class VersionFactory
   private static boolean _isDefaultValue(Object pValue)
   {
     return (pValue instanceof String && Strings.isNullOrEmpty((String) pValue)) ||
-        pValue instanceof Class<?> && (pValue.equals(Object.class) || pValue.equals(IParameterConverter.DEFAULT.class)) ||
+        pValue instanceof Class<?> && (pValue.equals(Void.class) || pValue.equals(IParameterConverter.DEFAULT.class)) ||
+        (pValue != null && pValue.getClass().isArray() && Arrays.equals((Object[]) pValue, new Class<?>[]{Void.class})) ||
         pValue == null;
+  }
+
+  public static List<IAccessorAttributeDescription<?>> createAttributes(List<Parameter> pParameters) //todo
+  {
+    if(pParameters == null || pParameters.isEmpty())
+      return Collections.emptyList();
+    ArrayList<IAccessorAttributeDescription<?>> attributes = new ArrayList<>(pParameters.size());
+    for (Parameter parameter : pParameters)
+      attributes.add(new ImmutableAccessorAttributeDescription<>(parameter.getType()));
+    return attributes;
   }
 
   /**
@@ -130,7 +160,7 @@ public class VersionFactory
   {
     public _AccessorVersionWrapper(Function pFunction)
     {
-      super(-1, pFunction.getPackageName(), pFunction.getIdentifier(), pFunction.getReturnType());
+      super(-1, pFunction.getPackageName(), pFunction.getIdentifier(), pFunction.getReturnType(), createAttributes(pFunction.getParameters()));
     }
   }
 
