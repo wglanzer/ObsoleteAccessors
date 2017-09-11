@@ -1,7 +1,6 @@
 package de.adito.aditoweb.obsoleteAccessors;
 
 import de.adito.aditoweb.obsoleteAccessors.api.*;
-import de.adito.aditoweb.obsoleteAccessors.spi.*;
 import org.junit.*;
 
 import java.util.*;
@@ -44,39 +43,6 @@ public class Test_Obsoletes
     Assert.assertEquals("container", classField.getPackageName());
     Assert.assertEquals("CLASSIFICATION_PUBLIC_STRING", classField.getIdentifier());
     Assert.assertEquals(String.class, classField.getReturnType());
-  }
-
-  @ObsoleteVersionContainer(category = "js", pkgName = "container")
-  public static class JSContainer
-  {
-    @ObsoleteVersions({
-        @ObsoleteVersion(version = 0, id = "CLASSIFICATION_PRIVATE", type = int.class)
-    })
-    public final static String CLASSIFICATION_PUBLIC = "asdf";
-
-    @ObsoleteVersions({
-        @ObsoleteVersion(version = 0, id = "CLASSIFICATION_PRIVATE", type = String.class)
-    })
-    public final static String CLASSIFICATION_PUBLIC_STRING = "asdf";
-
-    @ObsoleteVersions({
-        @ObsoleteVersion(version = 0, id = "getDoubleArr", type = double[].class),
-        @ObsoleteVersion(version = 1, id = "getIntList", parameters = {double.class, int[].class}, converter = _IntListToIntArrayConverter.class)
-    })
-    public int[] getIntArray(String pParam)
-    {
-      return new int[0];
-    }
-
-    public static class _IntListToIntArrayConverter implements IParameterConverter
-    {
-      @Override
-      public List<Parameter> convert(List<Parameter> pParameters)
-      {
-        return Collections.singletonList(new Parameter(String.class, String.valueOf(pParameters.get(0).getValue())));
-      }
-    }
-
   }
 
 }
