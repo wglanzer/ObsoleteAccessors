@@ -16,7 +16,7 @@ public class Test_Obsoletes
   {
     OAAttribute attribute1 = new OAAttribute(double.class, 1.5D);
     OAAttribute attribute2 = new OAAttribute(int[].class, new int[]{42, 24, 13});
-    OAAccessor accessor = new OAAccessor("container", "getDoubleArr", Arrays.asList(attribute1, attribute2), double[].class);
+    OAAccessor accessor = new OAAccessor("obso", "getDoubleArr", Arrays.asList(attribute1, attribute2), double[].class);
     OAAccessor convertedAccessor = Obsoletes.convert(accessor, "js");
     Assert.assertNotNull(convertedAccessor);
     Assert.assertEquals("container", convertedAccessor.getPackageName());

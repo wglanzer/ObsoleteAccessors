@@ -44,14 +44,14 @@ public class VersionFactory
                                                    List<IAccessorAttributeDescription<?>> pLatestDescriptions, Annotation[] pAnnotations)
   {
     LatestAccessorVersion latest = new LatestAccessorVersion(pContainer.pkgName(), pLatestName, pLatestType, pLatestDescriptions);
-    IAccessorVersion[] obsoleteVersions = _createVersion(pAnnotations, latest);
+    IAccessorVersion[] obsoleteVersions = _createVersion(pContainer, pAnnotations, latest);
     IAccessorVersion[] versions = new IAccessorVersion[obsoleteVersions.length + 1];
     System.arraycopy(obsoleteVersions, 0, versions, 0, obsoleteVersions.length);
     versions[versions.length - 1] = latest;
     return versions;
   }
 
-  private static IAccessorVersion[] _createVersion(Annotation[] pAnnotations, LatestAccessorVersion pLatest)
+  private static IAccessorVersion[] _createVersion(ObsoleteVersionContainer pContainer, Annotation[] pAnnotations, LatestAccessorVersion pLatest)
   {
     ArrayList<ObsoleteVersion> obsoleteVersionsList = new ArrayList<>();
     for (Annotation annotation : pAnnotations)
@@ -69,6 +69,9 @@ public class VersionFactory
     {
       ObsoleteVersion version = obsoleteVersionsList.get(i);
       String pkgName = extract(version, ObsoleteVersion::pkgName, obsoleteVersionsList, i + 1, pLatest::getPkgName);
+      if(Strings.isNullOrEmpty(pkgName))
+        pkgName = pContainer.pkgName();
+
       String id = extract(version, ObsoleteVersion::id, obsoleteVersionsList, i + 1, pLatest::getId);
       Class<?> type = extract(version, ObsoleteVersion::type, obsoleteVersionsList, i + 1, pLatest::getType);
       Class<?>[] parameters = extract(version, ObsoleteVersion::parameters, obsoleteVersionsList, i + 1, () -> null);

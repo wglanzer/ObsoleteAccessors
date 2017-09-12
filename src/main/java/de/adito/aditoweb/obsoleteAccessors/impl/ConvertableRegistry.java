@@ -19,8 +19,7 @@ class ConvertableRegistry
 
   private static ConvertableRegistry _INSTANCE;
 
-  // category -> pkgname -> alte functionversions -> neuste functionversion
-  private Map<String, Map<String, Map<IAccessorVersion[], IAccessorVersion>>> _CONVERSIONMAP = new HashMap<>();
+  private VersionRegistryTree tree = new VersionRegistryTree();
 
   public static ConvertableRegistry getInstance()
   {
@@ -43,49 +42,42 @@ class ConvertableRegistry
       List<IAccessorVersion[]> versions = Stream.concat(methodVersions, fieldVersions).collect(Collectors.toList());
 
       String category = pContainer.category();
-      String pkgName = pContainer.pkgName();
-      Map<String, Map<IAccessorVersion[], IAccessorVersion>> pkgName2FunctionMap = _CONVERSIONMAP.computeIfAbsent(category, pCategory -> new HashMap<>());
-      Map<IAccessorVersion[], IAccessorVersion> functionMap = pkgName2FunctionMap.computeIfAbsent(pkgName, pPkgname -> new HashMap<>());
 
       for (IAccessorVersion[] functionHistory : versions)
       {
-        IAccessorVersion newestFunction = functionHistory[functionHistory.length - 1];
-        functionMap.put(functionHistory, newestFunction);
+        for (int i = 0; i < functionHistory.length; i++)
+        {
+          IAccessorVersion version = functionHistory[i];
+          IAccessorVersion previous = i == 0 ? null : functionHistory[i - 1];
+          tree.addVersion(category, previous, version);
+        }
       }
     });
   }
 
   @Nullable
-  public OAAccessor find(String pCategory, String pPkgName, OAAccessor pAccessorToFind) throws Exception
+  public OAAccessor find(String pCategory, OAAccessor pAccessorToFind) throws Exception
   {
-    Map<String, Map<IAccessorVersion[], IAccessorVersion>> category = _CONVERSIONMAP.get(pCategory);
-    if(category == null)
-      throw new RuntimeException("Category not found");
-    Map<IAccessorVersion[], IAccessorVersion> pkg = category.get(pPkgName);
-    if(pkg == null)
-      throw new RuntimeException("Package not found");
+    IAccessorVersion accessorVersionToFind = VersionFactory.createVersion(pAccessorToFind);
 
-    IAccessorVersion accessor = VersionFactory.createVersion(pAccessorToFind);
+    VersionRegistryTree.VersionNode treeNode = tree.getVersion(pCategory, accessorVersionToFind);
+    if(treeNode == null)
+      return null;
 
-    for (Map.Entry<IAccessorVersion[], IAccessorVersion> entry : pkg.entrySet())
+    List<IAccessorVersion> versionHierarchy = new ArrayList<>(); // [actualAccessorToFindVersion, latestVersion] --- including outter versions
+    VersionRegistryTree.VersionNode next = treeNode;
+    while(next != null)
     {
-      IAccessorVersion[] key = entry.getKey();
-      for (int i = 0; i < key.length; i++)
-      {
-        IAccessorVersion obsoleteVersion = key[i];
-        if (accessor.equalTo(obsoleteVersion))
-        {
-          IAccessorAttributeConverter[] converters = Arrays.stream(key, i, key.length - 1)
-              .filter(Objects::nonNull)
-              .map(IAccessorVersion::getConverter)
-              .toArray(IAccessorAttributeConverter[]::new);
-          ProxyAttributeConverter converter = new ProxyAttributeConverter(converters);
-          return _createFunction(entry.getValue(), converter, pAccessorToFind);
-        }
-      }
+      versionHierarchy.add(next.getMyVersion());
+      next = next.getNewerVersion();
     }
 
-    return null;
+    IAccessorAttributeConverter[] converters = versionHierarchy.stream()
+        .map(IAccessorVersion::getConverter)
+        .filter(Objects::nonNull)
+        .toArray(IAccessorAttributeConverter[]::new);
+    ProxyAttributeConverter converter = new ProxyAttributeConverter(converters);
+    return _createFunction(versionHierarchy.get(versionHierarchy.size() - 1), converter, pAccessorToFind);
   }
 
   private OAAccessor _createFunction(IAccessorVersion pLatestVersion, IAccessorAttributeConverter pAttributeConverter, OAAccessor pOldAccessor) throws AttributeConversionException

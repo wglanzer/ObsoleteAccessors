@@ -12,7 +12,7 @@ public class ObsoleteAccessorsAccessor
   @Nullable
   public static OAAccessor convert(OAAccessor pOldAccessor, @Nullable String pCategory) throws Exception
   {
-    return ConvertableRegistry.getInstance().find(pCategory, pOldAccessor.getPackageName(), pOldAccessor);
+    return ConvertableRegistry.getInstance().find(pCategory, pOldAccessor);
   }
 
 }

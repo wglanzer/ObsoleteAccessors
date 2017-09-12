@@ -24,7 +24,7 @@ public class TestVersionContainerImpl
   public final static String CLASSIFICATION_PUBLIC_STRING = "asdf";
 
   @ObsoleteVersions({
-      @ObsoleteVersion(version = 0, id = "getDoubleArr", type = double[].class),
+      @ObsoleteVersion(version = 0, pkgName = "obso", id = "getDoubleArr", type = double[].class),
       @ObsoleteVersion(version = 1, id = "getIntList", parameters = {double.class, int[].class}, converter = _IntListToIntArrayConverter.class)
   })
   public int[] getIntArray(String pParam)
