@@ -55,6 +55,15 @@ class ConvertableRegistry
     });
   }
 
+  //public ConvertableRegistry(File pRegistryFile)
+  //{
+  //  IAnnotationContainer[] containers = AnnoSaveGZip.read(pRegistryFile);
+  //  List<IAccessorVersion> versions = Stream.of(containers)
+  //      .map(pContainer -> VersionFactory.createVersion(pContainer))
+  //      .collect(Collectors.toList());
+  //
+  //}
+
   @Nullable
   public OAAccessor find(String pCategory, OAAccessor pAccessorToFind) throws Exception
   {

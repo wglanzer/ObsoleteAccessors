@@ -1,5 +1,6 @@
 package com.github.wglanzer.obsoleteaccessors.spi;
 
+import com.github.wglanzer.annosave.processor.AnnoPersist;
 import com.github.wglanzer.obsoleteaccessors.impl.util.NotChangedType;
 
 /**
@@ -7,6 +8,7 @@ import com.github.wglanzer.obsoleteaccessors.impl.util.NotChangedType;
  *
  * @author W.Glanzer, 04.09.2017
  */
+@AnnoPersist
 public @interface ObsoleteVersion
 {
 

@@ -1,5 +1,6 @@
 package com.github.wglanzer.obsoleteaccessors.spi;
 
+import com.github.wglanzer.annosave.processor.AnnoPersist;
 import de.adito.picoservice.PicoService;
 
 import java.lang.annotation.*;
@@ -13,6 +14,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @PicoService
+@AnnoPersist
 public @interface ObsoleteVersionContainer
 {
 
@@ -25,5 +27,10 @@ public @interface ObsoleteVersionContainer
    * @return Additional category. <tt>""</tt> represents "no category"
    */
   String category() default "";
+
+  /**
+   * @return Serialization-Bridge for AnnoSave
+   */
+  boolean serialize() default false;
 
 }

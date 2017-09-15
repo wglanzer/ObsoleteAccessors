@@ -10,7 +10,7 @@ import java.util.*;
  * @author W.Glanzer, 11.09.2017
  */
 @SuppressWarnings("unused")
-@ObsoleteVersionContainer(category = "js", pkgName = "container")
+@ObsoleteVersionContainer(category = "js", pkgName = "container", serialize = true)
 public class TestVersionContainerImpl
 {
   @ObsoleteVersions({

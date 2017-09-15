@@ -3,6 +3,8 @@ package com.github.wglanzer.obsoleteaccessors.api;
 import com.github.wglanzer.obsoleteaccessors.impl.ObsoleteAccessorsAccessor;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+
 /**
  * Contains all API-Methods for ObsoleteAccessors
  *
@@ -27,6 +29,12 @@ public abstract class Obsoletes
   public static OAAccessor convert(OAAccessor pOldAccessor, @Nullable String pCategory) throws Exception
   {
     return ObsoleteAccessorsAccessor.convert(pOldAccessor, pCategory);
+  }
+
+  @Nullable
+  public static OAAccessor convert(OAAccessor pOldAccessor, @Nullable String pCategory, File pRegistryFile) throws Exception
+  {
+    return ObsoleteAccessorsAccessor.convert(pOldAccessor, pCategory, pRegistryFile);
   }
 
 }
