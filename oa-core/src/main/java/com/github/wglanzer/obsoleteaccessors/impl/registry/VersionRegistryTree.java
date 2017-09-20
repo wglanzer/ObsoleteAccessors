@@ -1,4 +1,4 @@
-package com.github.wglanzer.obsoleteaccessors.impl;
+package com.github.wglanzer.obsoleteaccessors.impl.registry;
 
 import com.github.wglanzer.obsoleteaccessors.impl.version.IAccessorVersion;
 import com.google.common.collect.*;

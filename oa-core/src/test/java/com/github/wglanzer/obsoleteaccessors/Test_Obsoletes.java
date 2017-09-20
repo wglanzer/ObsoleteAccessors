@@ -1,8 +1,10 @@
 package com.github.wglanzer.obsoleteaccessors;
 
 import com.github.wglanzer.obsoleteaccessors.api.*;
+import com.github.wglanzer.obsoleteaccessors.spi.IRegistryKey;
 import org.junit.*;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -39,6 +41,28 @@ public class Test_Obsoletes
     // CLASSIFICATION_PRIVATE with returnType STRING
     field = new OAAccessor("container", "CLASSIFICATION_PRIVATE", null, String.class);
     classField = Obsoletes.convert(field, "js");
+    Assert.assertNotNull(classField);
+    Assert.assertEquals("container", classField.getPackageName());
+    Assert.assertEquals("CLASSIFICATION_PUBLIC_STRING", classField.getIdentifier());
+    Assert.assertEquals(String.class, classField.getType());
+  }
+
+  @Test
+  public void test_zip_convertSimpleField() throws Exception
+  {
+    IRegistryKey key = Obsoletes.register(new File("target/test-classes/annosave.zip"));
+
+    // CLASSIFICATION_PRIVATE with returnType INTEGER
+    OAAccessor field = new OAAccessor("container", "CLASSIFICATION_PRIVATE", null, int.class);
+    OAAccessor classField = Obsoletes.convert(field, "js", key);
+    Assert.assertNotNull(classField);
+    Assert.assertEquals("container", classField.getPackageName());
+    Assert.assertEquals("CLASSIFICATION_PUBLIC", classField.getIdentifier());
+    Assert.assertEquals(String.class, classField.getType());
+
+    // CLASSIFICATION_PRIVATE with returnType STRING
+    field = new OAAccessor("container", "CLASSIFICATION_PRIVATE", null, String.class);
+    classField = Obsoletes.convert(field, "js", key);
     Assert.assertNotNull(classField);
     Assert.assertEquals("container", classField.getPackageName());
     Assert.assertEquals("CLASSIFICATION_PUBLIC_STRING", classField.getIdentifier());

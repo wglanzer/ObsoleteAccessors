@@ -1,5 +1,7 @@
 package com.github.wglanzer.obsoleteaccessors.impl.version;
 
+import com.github.wglanzer.annosave.api.*;
+import com.github.wglanzer.annosave.api.containers.IMethodContainer;
 import com.github.wglanzer.obsoleteaccessors.api.*;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.*;
 import com.github.wglanzer.obsoleteaccessors.impl.util.NotChangedType;
@@ -7,8 +9,6 @@ import com.github.wglanzer.obsoleteaccessors.spi.*;
 import com.google.common.base.Strings;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.*;
@@ -21,18 +21,26 @@ import java.util.stream.*;
 public class VersionFactory
 {
 
-  public static IAccessorVersion[] createVersion(ObsoleteVersionContainer pContainer, Method pReflMethod)
+  public static IAccessorVersion[] createVersion(IAnnotationContainer pRootContainer, IAnnotationContainer pContainer)
   {
-    List<IAccessorAttributeDescription<?>> descriptions = Stream.of(pReflMethod.getParameters())
-        .map(pParameter -> SimpleAccessorAttributeDescription.of(new OAAttribute(pParameter.getType(), null)))
-        .collect(Collectors.toList());
+    try
+    {
+      String pkgName = pRootContainer.getAnnotation(ObsoleteVersionContainer.class).getParameterValue("pkgName", String.class);
 
-    return _createVersion(pContainer, pReflMethod.getName(), pReflMethod.getReturnType(), descriptions, pReflMethod.getDeclaredAnnotations());
-  }
+      List<IAccessorAttributeDescription<?>> descriptions = null;
+      if(pContainer instanceof IMethodContainer)
+      {
+        descriptions = Stream.of(((IMethodContainer) pContainer).getMethodParameters())
+            .map(pParameter -> SimpleAccessorAttributeDescription.of(new OAAttribute(pParameter.getInstance(), null)))
+            .collect(Collectors.toList());
+      }
 
-  public static IAccessorVersion[] createVersion(ObsoleteVersionContainer pContainer, Field pReflField)
-  {
-    return _createVersion(pContainer, pReflField.getName(), pReflField.getType(), null, pReflField.getDeclaredAnnotations());
+      return _createVersion(pkgName, pContainer.getName(), pContainer.getType().getInstance(), descriptions, pContainer.getAnnotations());
+    }
+    catch(Exception e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 
   public static IAccessorVersion createVersion(OAAccessor pAccessor)
@@ -40,41 +48,45 @@ public class VersionFactory
     return new _AccessorVersionWrapper(pAccessor);
   }
 
-  private static IAccessorVersion[] _createVersion(ObsoleteVersionContainer pContainer, String pLatestName, Class<?> pLatestType,
-                                                   List<IAccessorAttributeDescription<?>> pLatestDescriptions, Annotation[] pAnnotations)
+  private static IAccessorVersion[] _createVersion(String pRootPackageName, String pLatestName, Class<?> pLatestType,
+                                                   List<IAccessorAttributeDescription<?>> pLatestDescriptions, IAnnotation[] pAnnotations)
   {
-    LatestAccessorVersion latest = new LatestAccessorVersion(pContainer.pkgName(), pLatestName, pLatestType, pLatestDescriptions);
-    IAccessorVersion[] obsoleteVersions = _createVersion(pContainer, pAnnotations, latest);
+    LatestAccessorVersion latest = new LatestAccessorVersion(pRootPackageName, pLatestName, pLatestType, pLatestDescriptions);
+    IAccessorVersion[] obsoleteVersions = _createVersion(pRootPackageName, pAnnotations, latest);
     IAccessorVersion[] versions = new IAccessorVersion[obsoleteVersions.length + 1];
     System.arraycopy(obsoleteVersions, 0, versions, 0, obsoleteVersions.length);
     versions[versions.length - 1] = latest;
     return versions;
   }
 
-  private static IAccessorVersion[] _createVersion(ObsoleteVersionContainer pContainer, Annotation[] pAnnotations, LatestAccessorVersion pLatest)
+  private static IAccessorVersion[] _createVersion(String pRootPackageName, IAnnotation[] pAnnotations, LatestAccessorVersion pLatest)
   {
-    ArrayList<ObsoleteVersion> obsoleteVersionsList = new ArrayList<>();
-    for (Annotation annotation : pAnnotations)
+    ArrayList<IAnnotation> obsoleteVersionsList = new ArrayList<>();
+    for (IAnnotation annotation : pAnnotations)
     {
-      if (annotation instanceof ObsoleteVersions)
-        obsoleteVersionsList.addAll(Arrays.asList(((ObsoleteVersions) annotation).value()));
-      else if (annotation instanceof ObsoleteVersion)
-        obsoleteVersionsList.add((ObsoleteVersion) annotation);
+      Class<?> type = annotation.getType().getInstance();
+      if(type != null) //type has to be resolvable, because the classes are ours o.O
+      {
+        if (ObsoleteVersions.class.isAssignableFrom(type))
+          obsoleteVersionsList.addAll(Arrays.asList((IAnnotation[]) annotation.getParameters()[0].getValue()));
+        else if (ObsoleteVersion.class.isAssignableFrom(type))
+          obsoleteVersionsList.add(annotation);
+      }
     }
 
-    obsoleteVersionsList.sort(Comparator.comparingInt(ObsoleteVersion::version));
+    obsoleteVersionsList.sort(Comparator.comparingInt(pAnno -> Integer.valueOf(String.valueOf(pAnno.getParameterValue("version")))));
 
     IAccessorVersion[] versions = new IAccessorVersion[obsoleteVersionsList.size()];
     for (int i = 0; i < obsoleteVersionsList.size(); i++)
     {
-      ObsoleteVersion version = obsoleteVersionsList.get(i);
-      String pkgName = extract(version, ObsoleteVersion::pkgName, obsoleteVersionsList, i + 1, pLatest::getPkgName);
+      IAnnotation version = obsoleteVersionsList.get(i);
+      String pkgName = extract(version, "pkgName", obsoleteVersionsList, i + 1, pLatest::getPkgName);
       if(Strings.isNullOrEmpty(pkgName))
-        pkgName = pContainer.pkgName();
+        pkgName = pRootPackageName;
 
-      String id = extract(version, ObsoleteVersion::id, obsoleteVersionsList, i + 1, pLatest::getId);
-      Class<?> type = extract(version, ObsoleteVersion::type, obsoleteVersionsList, i + 1, pLatest::getType);
-      Class<?>[] parameters = extract(version, ObsoleteVersion::parameters, obsoleteVersionsList, i + 1, () -> null);
+      String id = extract(version, "id", obsoleteVersionsList, i + 1, pLatest::getId);
+      Class<?> type = extract(version, "type", obsoleteVersionsList, i + 1, pLatest::getType);
+      Class<?>[] parameters = extract(version, "parameters", obsoleteVersionsList, i + 1, () -> null);
       List<IAccessorAttributeDescription<?>> attributeDescriptions;
       if(parameters != null)
       {
@@ -85,22 +97,24 @@ public class VersionFactory
       else
         attributeDescriptions = pLatest.getAttributeDescriptions();
 
-      versions[i] = new ObsoleteAccessorVersion(version.version(), pkgName, id, version.converter(), type, attributeDescriptions);
+      versions[i] = new ObsoleteAccessorVersion(Integer.valueOf(String.valueOf(version.getParameterValue("version"))), pkgName, id,
+                                                (Class<? extends IAttributeConverter>) version.getParameterValue("converter"), type, attributeDescriptions);
     }
 
     return versions;
   }
 
-  private static <T> T extract(ObsoleteVersion pCurrentVersion, java.util.function.Function<ObsoleteVersion, T> pExtractor,
-                               List<ObsoleteVersion> pObsoleteVersions, int pStartIndex,
+  private static <T> T extract(IAnnotation pCurrentVersion, String pParameterName,
+                               List<IAnnotation> pObsoleteVersions, int pStartIndex,
                                Supplier<T> pLatestValue)
   {
     // set in current version?
-    T value = pExtractor.apply(pCurrentVersion);
+    T value = (T) pCurrentVersion.getParameterValue(pParameterName);
     if (_isDefaultValue(value))
     {
       // set in versions after?
-      value = findFirstNonNull(pObsoleteVersions, pStartIndex, pExtractor);
+      value = findFirstNonNull(pObsoleteVersions, pStartIndex, pAnno -> (T) pAnno.getParameterValue(pParameterName));
+
       if (_isDefaultValue(value))
 
         // set in latest version!
