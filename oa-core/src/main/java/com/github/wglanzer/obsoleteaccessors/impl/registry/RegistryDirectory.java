@@ -6,7 +6,7 @@ import de.adito.picoservice.IPicoRegistry;
 import org.apache.commons.io.output.NullOutputStream;
 import org.jetbrains.annotations.*;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -54,7 +54,21 @@ public class RegistryDirectory
 
     try
     {
-      IAnnotationContainer[] containers = AnnoSaveGZip.read(pRegistryFile);
+      return register(new FileInputStream(pRegistryFile));
+    }
+    catch (Exception e)
+    {
+      // Collect all exceptions here (+RuntimeExceptions) and rethrow
+      throw new Exception(e);
+    }
+  }
+
+  @NotNull
+  public static IRegistryKey register(@NotNull InputStream pStream) throws Exception
+  {
+    try
+    {
+      IAnnotationContainer[] containers = AnnoSaveGZip.read(pStream);
       RegistryKeyImpl key = new RegistryKeyImpl(null);
       directory.put(key, new ConvertableRegistry(containers));
       return key;

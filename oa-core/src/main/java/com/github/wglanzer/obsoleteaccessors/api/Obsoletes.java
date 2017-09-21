@@ -4,7 +4,7 @@ import com.github.wglanzer.obsoleteaccessors.impl.registry.RegistryDirectory;
 import com.github.wglanzer.obsoleteaccessors.spi.IRegistryKey;
 import org.jetbrains.annotations.*;
 
-import java.io.File;
+import java.io.*;
 
 /**
  * Contains all API-Methods for ObsoleteAccessors
@@ -71,6 +71,19 @@ public abstract class Obsoletes
   public static IRegistryKey register(@NotNull File pRegistryFile) throws Exception
   {
     return RegistryDirectory.register(pRegistryFile);
+  }
+
+  /**
+   * Registers a new File to the directory.
+   * This file has to be a zip-file generated with AnnoSave.
+   *
+   * @param pStream Stream which should be registered as registry
+   * @return A key-object to reference the registered file
+   */
+  @NotNull
+  public static IRegistryKey register(@NotNull InputStream pStream) throws Exception
+  {
+    return RegistryDirectory.register(pStream);
   }
 
   /**
