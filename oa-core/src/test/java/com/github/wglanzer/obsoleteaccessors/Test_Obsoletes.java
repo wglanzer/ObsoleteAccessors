@@ -1,7 +1,6 @@
 package com.github.wglanzer.obsoleteaccessors;
 
 import com.github.wglanzer.obsoleteaccessors.api.*;
-import com.github.wglanzer.obsoleteaccessors.spi.IRegistryKey;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
