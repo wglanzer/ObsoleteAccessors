@@ -1,7 +1,6 @@
 package com.github.wglanzer.obsoleteaccessors.api;
 
 import com.github.wglanzer.obsoleteaccessors.impl.registry.RegistryDirectory;
-import com.github.wglanzer.obsoleteaccessors.spi.IRegistryKey;
 import org.jetbrains.annotations.*;
 
 import java.io.*;

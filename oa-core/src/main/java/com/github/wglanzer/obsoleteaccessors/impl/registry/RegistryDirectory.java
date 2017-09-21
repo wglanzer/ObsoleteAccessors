@@ -1,7 +1,7 @@
 package com.github.wglanzer.obsoleteaccessors.impl.registry;
 
 import com.github.wglanzer.annosave.api.*;
-import com.github.wglanzer.obsoleteaccessors.spi.*;
+import com.github.wglanzer.obsoleteaccessors.api.*;
 import de.adito.picoservice.IPicoRegistry;
 import org.apache.commons.io.output.NullOutputStream;
 import org.jetbrains.annotations.*;

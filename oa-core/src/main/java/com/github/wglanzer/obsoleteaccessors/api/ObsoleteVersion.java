@@ -1,7 +1,8 @@
-package com.github.wglanzer.obsoleteaccessors.spi;
+package com.github.wglanzer.obsoleteaccessors.api;
 
 import com.github.wglanzer.annosave.processor.AnnoPersist;
 import com.github.wglanzer.obsoleteaccessors.impl.util.NotChangedType;
+import com.github.wglanzer.obsoleteaccessors.spi.IAttributeConverter;
 
 /**
  * An "ObsoleteVersion" defines a specific version of an accessor via annotation.

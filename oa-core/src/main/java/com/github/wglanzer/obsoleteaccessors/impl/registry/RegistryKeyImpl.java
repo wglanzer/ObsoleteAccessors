@@ -1,6 +1,6 @@
 package com.github.wglanzer.obsoleteaccessors.impl.registry;
 
-import com.github.wglanzer.obsoleteaccessors.spi.IRegistryKey;
+import com.github.wglanzer.obsoleteaccessors.api.IRegistryKey;
 import com.google.common.base.Objects;
 import org.jetbrains.annotations.Nullable;
 

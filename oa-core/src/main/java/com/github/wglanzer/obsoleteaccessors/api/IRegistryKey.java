@@ -1,4 +1,4 @@
-package com.github.wglanzer.obsoleteaccessors.spi;
+package com.github.wglanzer.obsoleteaccessors.api;
 
 import com.github.wglanzer.obsoleteaccessors.impl.registry.RegistryKeyImpl;
 

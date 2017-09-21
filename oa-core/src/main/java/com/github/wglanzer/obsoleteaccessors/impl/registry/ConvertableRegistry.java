@@ -5,7 +5,6 @@ import com.github.wglanzer.obsoleteaccessors.api.*;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.*;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.conversion.*;
 import com.github.wglanzer.obsoleteaccessors.impl.version.*;
-import com.github.wglanzer.obsoleteaccessors.spi.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
