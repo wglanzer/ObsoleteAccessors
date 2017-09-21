@@ -37,8 +37,6 @@ public class RegistryKeyImpl implements IRegistryKey
   @Override
   public String toString()
   {
-    return "RegistryKeyImpl{" +
-        "id='" + id + '\'' +
-        '}';
+    return String.valueOf(id);
   }
 }
