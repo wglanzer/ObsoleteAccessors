@@ -91,7 +91,7 @@ public class RegistryDirectory
     if (_DEFAULT_REGISTRY == null)
     {
       IAnnotationContainer[] containersOnClasspath = IPicoRegistry.INSTANCE.find(Object.class, ObsoleteVersionContainer.class).entrySet().stream()
-          .map(pEntry -> AnnoSave.write(pEntry.getKey(), new NullOutputStream()))
+          .flatMap(pEntry -> AnnoSave.write(pEntry.getKey(), new NullOutputStream()).stream())
           .toArray(IAnnotationContainer[]::new);
       _DEFAULT_REGISTRY = new ConvertableRegistry(containersOnClasspath);
     }

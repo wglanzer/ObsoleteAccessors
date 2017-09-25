@@ -65,6 +65,18 @@ public class Test_Obsoletes
     Obsoletes.convert(accessor, "NO_PACKAGE_AVAILABLE", key);
   }
 
+  @Test
+  public void test_convertInnerContainer() throws Exception
+  {
+    OAAccessor accessor = new OAAccessor("innerContainer", "getContainer", Arrays.asList(new OAAttribute(TestVersionContainerImpl.class, null), new OAAttribute(int.class, null)), TestVersionContainerImpl.class);
+    OAAccessor converted = Obsoletes.convert(accessor, "js", key);
+    Assert.assertNotNull(converted);
+    Assert.assertEquals(converted.getIdentifier(), "getMyInnerContainer");
+    Assert.assertEquals(converted.getPackageName(), "innerContainer");
+    Assert.assertEquals(converted.getType(), TestVersionContainerImpl.InnerContainer.class);
+    Assert.assertEquals(converted.getAttributes(), Arrays.asList(new OAAttribute(TestVersionContainerImpl.class, null), new OAAttribute(int.class, null)));
+  }
+
   @Parameterized.Parameters(name = "{0}")
   public static Object[] data() throws Exception
   {

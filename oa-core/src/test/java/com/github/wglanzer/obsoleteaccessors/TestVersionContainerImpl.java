@@ -1,8 +1,8 @@
 package com.github.wglanzer.obsoleteaccessors;
 
 import com.github.wglanzer.obsoleteaccessors.api.*;
-import com.github.wglanzer.obsoleteaccessors.spi.*;
-import org.jetbrains.annotations.NotNull;
+import com.github.wglanzer.obsoleteaccessors.spi.IAttributeConverter;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
@@ -30,6 +30,19 @@ public class TestVersionContainerImpl
   public int[] getIntArray(String pParam)
   {
     return new int[0];
+  }
+
+  @ObsoleteVersionContainer(category = "js", pkgName = "innerContainer", serialize = true)
+  public static class InnerContainer
+  {
+    @ObsoleteVersions({
+        @ObsoleteVersion(version = 0, id = "getContainer", type = TestVersionContainerImpl.class)
+    })
+    @Nullable
+    public InnerContainer getMyInnerContainer(@NotNull TestVersionContainerImpl pContainer, int pID)
+    {
+      return null;
+    }
   }
 
   public static class _IntListToIntArrayConverter implements IAttributeConverter
