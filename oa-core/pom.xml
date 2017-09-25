@@ -18,13 +18,13 @@
     <dependency>
       <groupId>com.github.wglanzer.annosave</groupId>
       <artifactId>annosave-core</artifactId>
-      <version>1.2.0</version>
+      <version>1.2.1</version>
     </dependency>
 
     <dependency>
       <groupId>com.github.wglanzer.annosave</groupId>
       <artifactId>annosave-processor</artifactId>
-      <version>1.2.0</version>
+      <version>1.2.1</version>
     </dependency>
 
   </dependencies>
@@ -36,23 +36,15 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>3.3.0</version>
-        <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>com.github.wglanzer.obsoleteaccessors.api,com.github.wglanzer.obsoleteaccessors.spi</Export-Package>
+            <Export-Package>
+              com.github.wglanzer.obsoleteaccessors.api,
+              com.github.wglanzer.obsoleteaccessors.spi
+            </Export-Package>
             <Private-Package>com.github.wglanzer.obsoleteaccessors.impl</Private-Package>
           </instructions>
         </configuration>
-        <executions>
-          <execution>
-            <id>bundle-manifest</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>manifest</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
