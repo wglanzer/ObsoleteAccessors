@@ -1,6 +1,6 @@
 package com.github.wglanzer.obsoleteaccessors.api;
 
-import com.github.wglanzer.annosave.processor.AnnoPersist;
+import com.github.wglanzer.annosave.processor.api.AnnoPersist;
 import de.adito.picoservice.PicoService;
 
 import java.lang.annotation.*;
