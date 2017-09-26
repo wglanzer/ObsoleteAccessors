@@ -56,6 +56,26 @@ public class Test_Obsoletes
     Assert.assertEquals(String.class, classField.getType());
   }
 
+  @Test
+  public void test_convertWithoutType() throws Exception
+  {
+    OAAttribute attribute1 = new OAAttribute(double.class, 1.5D);
+    OAAttribute attribute2 = new OAAttribute(int[].class, new int[]{42, 24, 13});
+    OAAccessor field = new OAAccessor("container", "getIntList", Arrays.asList(attribute1, attribute2), int[].class);
+    OAAccessor classField = Obsoletes.convert(field, "js", key);
+    Assert.assertNotNull(classField);
+  }
+
+  @Test
+  public void test_idChangedInSubClass() throws Exception
+  {
+    OAAttribute attribute1 = new OAAttribute(TestVersionContainerImpl.class, null);
+    OAAttribute attribute2 = new OAAttribute(int.class, null);
+    OAAccessor field = new OAAccessor("innerContainer", "getMyContainer", Arrays.asList(attribute1, attribute2), TestVersionContainerImpl.InnerContainer.class);
+    OAAccessor convert = Obsoletes.convert(field, "js", key);
+    Assert.assertNotNull(convert);
+  }
+
   @Test(expected = RuntimeException.class)
   public void test_convertFunctionNotAvailableInPackage() throws Exception
   {

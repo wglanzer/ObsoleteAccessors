@@ -3,7 +3,6 @@ package com.github.wglanzer.obsoleteaccessors.impl.registry;
 import com.github.wglanzer.annosave.api.*;
 import com.github.wglanzer.obsoleteaccessors.api.*;
 import de.adito.picoservice.IPicoRegistry;
-import org.apache.commons.io.output.NullOutputStream;
 import org.jetbrains.annotations.*;
 
 import java.io.*;
@@ -91,7 +90,8 @@ public class RegistryDirectory
     if (_DEFAULT_REGISTRY == null)
     {
       IAnnotationContainer[] containersOnClasspath = IPicoRegistry.INSTANCE.find(Object.class, ObsoleteVersionContainer.class).entrySet().stream()
-          .flatMap(pEntry -> AnnoSave.write(pEntry.getKey(), new NullOutputStream()).stream())
+          .flatMap(pEntry -> AnnoSave.write(pEntry.getKey()).stream())
+          .distinct()
           .toArray(IAnnotationContainer[]::new);
       _DEFAULT_REGISTRY = new ConvertableRegistry(containersOnClasspath);
     }

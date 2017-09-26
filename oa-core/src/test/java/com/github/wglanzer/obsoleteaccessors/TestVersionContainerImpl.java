@@ -36,7 +36,8 @@ public class TestVersionContainerImpl
   public static class InnerContainer
   {
     @ObsoleteVersions({
-        @ObsoleteVersion(version = 0, id = "getContainer", type = TestVersionContainerImpl.class)
+        @ObsoleteVersion(version = 0, id = "getContainer", type = TestVersionContainerImpl.class),
+        @ObsoleteVersion(version = 1, id = "getMyContainer")
     })
     @Nullable
     public InnerContainer getMyInnerContainer(@NotNull TestVersionContainerImpl pContainer, int pID)

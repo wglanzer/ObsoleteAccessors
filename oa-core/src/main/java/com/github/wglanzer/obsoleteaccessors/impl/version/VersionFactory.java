@@ -5,7 +5,7 @@ import com.github.wglanzer.annosave.api.containers.IMethodContainer;
 import com.github.wglanzer.obsoleteaccessors.api.*;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.*;
 import com.github.wglanzer.obsoleteaccessors.impl.util.NotChangedType;
-import com.github.wglanzer.obsoleteaccessors.spi.*;
+import com.github.wglanzer.obsoleteaccessors.spi.IAttributeConverter;
 import com.google.common.base.Strings;
 import org.jetbrains.annotations.Nullable;
 
@@ -155,7 +155,7 @@ public class VersionFactory
   private static boolean _isDefaultValue(Object pValue)
   {
     return (pValue instanceof String && Strings.isNullOrEmpty((String) pValue)) ||
-        pValue instanceof Class<?> && (pValue.equals(Void.class) || pValue.equals(IAttributeConverter.DEFAULT.class)) ||
+        pValue instanceof Class<?> && (pValue.equals(Void.class) || pValue.equals(IAttributeConverter.DEFAULT.class) || pValue.equals(NotChangedType.class)) ||
         (pValue != null && pValue.getClass().isArray() && Arrays.equals((Object[]) pValue, new Class<?>[]{NotChangedType.class})) ||
         pValue == null;
   }
