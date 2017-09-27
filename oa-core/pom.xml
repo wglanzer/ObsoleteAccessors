@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.github.wglanzer.obsoleteaccessors</groupId>
     <artifactId>oa-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
   </parent>
 
   <artifactId>oa-core</artifactId>
@@ -31,7 +31,6 @@
 
   <build>
     <plugins>
-
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
@@ -41,21 +40,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-
-      <!-- OSGI -->
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Export-Package>
-              com.github.wglanzer.obsoleteaccessors.api,
-              com.github.wglanzer.obsoleteaccessors.spi
-            </Export-Package>
-            <Private-Package>com.github.wglanzer.obsoleteaccessors.impl</Private-Package>
-          </instructions>
-        </configuration>
       </plugin>
     </plugins>
   </build>
