@@ -38,7 +38,7 @@ class ConvertableRegistry implements IConvertableRegistry
 
   @Nullable
   @Override
-  public OAAccessor find(@NotNull OAAccessor pAccessorToFind, @Nullable String pCategory) throws Exception
+  public OAAccessor convert(@NotNull OAAccessor pAccessorToFind, @Nullable String pCategory) throws Exception
   {
     IAccessorVersion accessorVersionToFind = VersionFactory.createVersion(pAccessorToFind);
 
@@ -60,6 +60,21 @@ class ConvertableRegistry implements IConvertableRegistry
         .toArray(IAccessorAttributeConverter[]::new);
     ProxyAttributeConverter converter = new ProxyAttributeConverter(converters);
     return _createFunction(versionHierarchy.get(versionHierarchy.size() - 1), converter, pAccessorToFind);
+  }
+
+  @NotNull
+  @Override
+  public List<OAAccessor> findAccessors(@Nullable String pCategory, @NotNull String pPkgName, @NotNull String pIdentifier)
+  {
+    return tree.findVersions(pCategory, pPkgName, pIdentifier).stream()
+        .map(VersionRegistryTree.VersionNode::getMyVersion)
+        .map(pVersion -> {
+          List<OAAttribute> attrs = pVersion.getAttributeDescriptions().stream()
+              .map(pDescr -> new OAAttribute(pDescr.getType(), null))
+              .collect(Collectors.toList());
+          return new OAAccessor(pVersion.getPkgName(), pVersion.getId(), attrs, pVersion.getType());
+        })
+        .collect(Collectors.toList());
   }
 
   private OAAccessor _createFunction(IAccessorVersion pLatestVersion, IAccessorAttributeConverter pAttributeConverter, OAAccessor pOldAccessor) throws AttributeConversionException

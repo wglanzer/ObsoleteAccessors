@@ -4,6 +4,7 @@ import com.github.wglanzer.obsoleteaccessors.impl.registry.RegistryDirectory;
 import org.jetbrains.annotations.*;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * Contains all API-Methods for ObsoleteAccessors
@@ -56,7 +57,22 @@ public abstract class Obsoletes
   @Nullable
   public static OAAccessor convert(OAAccessor pOldAccessor, @Nullable String pCategory, @NotNull IRegistryKey pRegistryKey) throws Exception
   {
-    return RegistryDirectory.get(pRegistryKey).find(pOldAccessor, pCategory);
+    return RegistryDirectory.get(pRegistryKey).convert(pOldAccessor, pCategory);
+  }
+
+  /**
+   * Returns all registered accessors with the given category, packagename and identifier
+   *
+   * @param pCategory   Category to search for
+   * @param pPkgName    Package to search in
+   * @param pIdentifier ID searched
+   * @param pKey        Registry to search in
+   * @return a list of all found accessors, not <tt>null</tt>
+   */
+  @NotNull
+  public static List<OAAccessor> findAccessors(@Nullable String pCategory, @NotNull String pPkgName, @NotNull String pIdentifier, IRegistryKey pKey)
+  {
+    return RegistryDirectory.get(pKey).findAccessors(pCategory, pPkgName, pIdentifier);
   }
 
   /**

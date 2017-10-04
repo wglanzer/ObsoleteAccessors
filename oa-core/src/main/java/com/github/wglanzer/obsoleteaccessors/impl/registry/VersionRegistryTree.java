@@ -2,9 +2,10 @@ package com.github.wglanzer.obsoleteaccessors.impl.registry;
 
 import com.github.wglanzer.obsoleteaccessors.impl.version.IAccessorVersion;
 import com.google.common.collect.*;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class contains the inner structure for the ConvertableRegistry.
@@ -17,19 +18,6 @@ class VersionRegistryTree
 {
 
   private HashMap<String, Multimap<String, VersionNode>> tree = new HashMap<>();
-
-  public VersionNode getVersion(String pCategory, IAccessorVersion pVersion)
-  {
-    Multimap<String, VersionNode> categoryMap = tree.get(pCategory);
-    if(categoryMap == null)
-      throw new RuntimeException("Category not found (\"" + pCategory + "\")");
-    Collection<VersionNode> pkg = categoryMap.get(pVersion.getPkgName());
-    if(pkg == null)
-      throw new RuntimeException("Package not found (\"" + pVersion.getPkgName() + "\")");
-    return pkg.stream()
-        .filter(pNode -> pVersion.equalTo(pNode.getMyVersion()))
-        .findFirst().orElse(null);
-  }
 
   public void addVersion(String pCategory, @Nullable IAccessorVersion pPreviousVersion, IAccessorVersion pVersion)
   {
@@ -46,6 +34,34 @@ class VersionRegistryTree
       previousNode._setNewer(actualNode);
       actualNode._setOlder(previousNode);
     }
+  }
+
+  @Nullable
+  public VersionNode getVersion(String pCategory, IAccessorVersion pVersion)
+  {
+    Multimap<String, VersionNode> categoryMap = tree.get(pCategory);
+    if(categoryMap == null)
+      throw new RuntimeException("Category not found (\"" + pCategory + "\")");
+    Collection<VersionNode> pkg = categoryMap.get(pVersion.getPkgName());
+    if(pkg == null)
+      throw new RuntimeException("Package not found (\"" + pVersion.getPkgName() + "\")");
+    return pkg.stream()
+        .filter(pNode -> pVersion.equalTo(pNode.getMyVersion()))
+        .findFirst().orElse(null);
+  }
+
+  @NotNull
+  public List<VersionNode> findVersions(String pCategory, String pPkgName, String pIdentifier)
+  {
+    Multimap<String, VersionNode> category = tree.get(pCategory);
+    if(category == null)
+      return Collections.emptyList();
+    Collection<VersionNode> pkg = category.get(pPkgName);
+    if(pkg == null)
+      return Collections.emptyList();
+    return pkg.stream()
+        .filter(pNode -> pNode.getMyVersion().getId().equals(pIdentifier))
+        .collect(Collectors.toList());
   }
 
   public static class VersionNode
