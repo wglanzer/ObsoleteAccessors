@@ -5,6 +5,7 @@ import com.github.wglanzer.obsoleteaccessors.spi.IAttributeConverter;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 /**
  * @author W.Glanzer, 11.09.2017
@@ -32,6 +33,14 @@ public class TestVersionContainerImpl
     return new int[0];
   }
 
+  @ObsoleteVersions({
+      @ObsoleteVersion(version = 0, parameters = double.class, converter = _ParameterConsumerConverter.class, converterAttributes = {"my", "params"})
+  })
+  public int[] getParameterConsumerConverter(String pParam, String pParam2)
+  {
+    return new int[0];
+  }
+
   @ObsoleteVersionContainer(category = "js", pkgName = "innerContainer", serialize = true)
   public static class InnerContainer
   {
@@ -50,9 +59,26 @@ public class TestVersionContainerImpl
   {
     @NotNull
     @Override
-    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes) throws AttributeConversionException
+    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes)
     {
       return Collections.singletonList(new OAAttribute(String.class, String.valueOf(pAttributes.get(0).getValue())));
+    }
+  }
+
+  public static class _ParameterConsumerConverter implements IAttributeConverter
+  {
+    private final String[] strings;
+
+    public _ParameterConsumerConverter(String[] pStrings)
+    {
+      strings = pStrings;
+    }
+
+    @NotNull
+    @Override
+    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes)
+    {
+      return Stream.of(strings).map(pString -> new OAAttribute(String.class, pString)).collect(Collectors.toList());
     }
   }
 

@@ -98,7 +98,9 @@ public class VersionFactory
         attributeDescriptions = pLatest.getAttributeDescriptions();
 
       versions[i] = new ObsoleteAccessorVersion(Integer.valueOf(String.valueOf(version.getParameterValue("version"))), pkgName, id,
-                                                (Class<? extends IAttributeConverter>) version.getParameterValue("converter"), type, attributeDescriptions);
+                                                (Class<? extends IAttributeConverter>) version.getParameterValue("converter"),
+                                                (String[]) version.getParameterValue("converterAttributes"),
+                                                type, attributeDescriptions);
     }
 
     return versions;

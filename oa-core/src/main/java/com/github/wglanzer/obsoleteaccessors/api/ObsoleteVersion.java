@@ -49,4 +49,10 @@ public @interface ObsoleteVersion
    */
   Class<? extends IAttributeConverter> converter() default IAttributeConverter.DEFAULT.class;
 
+  /**
+   * @return additional attributes for an IAttributeConverter instance
+   * if a constructor inside the specified Converter consumes a String-Array
+   */
+  String[] converterAttributes() default "";
+
 }

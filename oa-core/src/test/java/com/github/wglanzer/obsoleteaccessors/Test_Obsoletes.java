@@ -97,6 +97,18 @@ public class Test_Obsoletes
     Assert.assertEquals(converted.getAttributes(), Arrays.asList(new OAAttribute(TestVersionContainerImpl.class, null), new OAAttribute(int.class, null)));
   }
 
+  @Test
+  public void test_convertParameters() throws Exception
+  {
+    OAAccessor accessor = new OAAccessor("container", "getParameterConsumerConverter", Collections.singletonList(new OAAttribute(double.class, 5)), int[].class);
+    Assert.assertEquals(5, accessor.getAttributes().get(0).getValue()); //pre-convert
+    OAAccessor converted = Obsoletes.convert(accessor, "js", key);
+    Assert.assertNotNull(converted);
+    Assert.assertEquals(2, converted.getAttributes().size()); // post-convert
+    Assert.assertEquals("my", converted.getAttributes().get(0).getValue());
+    Assert.assertEquals("params", converted.getAttributes().get(1).getValue());
+  }
+
   @Parameterized.Parameters(name = "{0}")
   public static Object[] data() throws Exception
   {
