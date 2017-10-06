@@ -10,7 +10,7 @@ import com.google.common.base.Strings;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.*;
 
 /**
@@ -21,7 +21,8 @@ import java.util.stream.*;
 public class VersionFactory
 {
 
-  public static IAccessorVersion[] createVersion(IAnnotationContainer pRootContainer, IAnnotationContainer pContainer)
+  public static IAccessorVersion[] createVersion(IAnnotationContainer pRootContainer, IAnnotationContainer pContainer,
+                                                 Function<IAccessorVersion, IAccessorVersion> pNextVersionSupplier)
   {
     try
     {
@@ -35,7 +36,7 @@ public class VersionFactory
             .collect(Collectors.toList());
       }
 
-      return _createVersion(pkgName, pContainer.getName(), pContainer.getType().getInstance(), descriptions, pContainer.getAnnotations());
+      return _createVersion(pkgName, pContainer.getName(), pContainer.getType().getInstance(), descriptions, pContainer.getAnnotations(), pNextVersionSupplier);
     }
     catch(Exception e)
     {
@@ -49,17 +50,19 @@ public class VersionFactory
   }
 
   private static IAccessorVersion[] _createVersion(String pRootPackageName, String pLatestName, Class<?> pLatestType,
-                                                   List<IAccessorAttributeDescription<?>> pLatestDescriptions, IAnnotation[] pAnnotations)
+                                                   List<IAccessorAttributeDescription<?>> pLatestDescriptions, IAnnotation[] pAnnotations,
+                                                   Function<IAccessorVersion, IAccessorVersion> pNextVersionSupplier)
   {
     LatestAccessorVersion latest = new LatestAccessorVersion(pRootPackageName, pLatestName, pLatestType, pLatestDescriptions);
-    IAccessorVersion[] obsoleteVersions = _createVersion(pRootPackageName, pAnnotations, latest);
+    IAccessorVersion[] obsoleteVersions = _createVersion(pRootPackageName, pAnnotations, latest, pNextVersionSupplier);
     IAccessorVersion[] versions = new IAccessorVersion[obsoleteVersions.length + 1];
     System.arraycopy(obsoleteVersions, 0, versions, 0, obsoleteVersions.length);
     versions[versions.length - 1] = latest;
     return versions;
   }
 
-  private static IAccessorVersion[] _createVersion(String pRootPackageName, IAnnotation[] pAnnotations, LatestAccessorVersion pLatest)
+  private static IAccessorVersion[] _createVersion(String pRootPackageName, IAnnotation[] pAnnotations, LatestAccessorVersion pLatest,
+                                                   Function<IAccessorVersion, IAccessorVersion> pNextVersionSupplier)
   {
     ArrayList<IAnnotation> obsoleteVersionsList = new ArrayList<>();
     for (IAnnotation annotation : pAnnotations)
@@ -74,7 +77,8 @@ public class VersionFactory
       }
     }
 
-    obsoleteVersionsList.sort(Comparator.comparingInt(pAnno -> Integer.valueOf(String.valueOf(pAnno.getParameterValue("version")))));
+    obsoleteVersionsList.sort(Comparator.comparingInt(VersionFactory::_getBranch)
+                                  .thenComparingInt(VersionFactory::_getVersion));
 
     IAccessorVersion[] versions = new IAccessorVersion[obsoleteVersionsList.size()];
     for (int i = 0; i < obsoleteVersionsList.size(); i++)
@@ -97,10 +101,10 @@ public class VersionFactory
       else
         attributeDescriptions = pLatest.getAttributeDescriptions();
 
-      versions[i] = new ObsoleteAccessorVersion(Integer.valueOf(String.valueOf(version.getParameterValue("version"))), pkgName, id,
+      versions[i] = new ObsoleteAccessorVersion(_getBranch(version), _getVersion(version), pkgName, id,
                                                 (Class<? extends IAttributeConverter>) version.getParameterValue("converter"),
                                                 (String[]) version.getParameterValue("converterAttributes"),
-                                                type, attributeDescriptions);
+                                                type, attributeDescriptions, pNextVersionSupplier);
     }
 
     return versions;
@@ -114,8 +118,14 @@ public class VersionFactory
     T value = (T) pCurrentVersion.getParameterValue(pParameterName);
     if (_isDefaultValue(value))
     {
-      // set in versions after?
-      value = findFirstNonNull(pObsoleteVersions, pStartIndex, pAnno -> (T) pAnno.getParameterValue(pParameterName));
+      // set in versions after in current branch?
+      value = findFirstNonNull(pObsoleteVersions, pStartIndex, pAnno -> {
+        int myBranch = _getBranch(pCurrentVersion);
+        int thisBranch = _getBranch(pAnno);
+        if(myBranch == thisBranch)
+          return (T) pAnno.getParameterValue(pParameterName);
+        return null;
+      });
 
       if (_isDefaultValue(value))
 
@@ -163,6 +173,22 @@ public class VersionFactory
   }
 
   /**
+   * @return The "version"-Parameter of the given annotation
+   */
+  private static int _getVersion(IAnnotation pAnnotation)
+  {
+    return Integer.parseInt(String.valueOf(pAnnotation.getParameterValue("version")));
+  }
+
+  /**
+   * @return The "branch"-Parameter of the given annotation
+   */
+  private static int _getBranch(IAnnotation pAnnotation)
+  {
+    return Integer.parseInt(String.valueOf(pAnnotation.getParameterValue("branch")));
+  }
+
+  /**
    * AccessorVersion-Wrapper to wrap Functions in IAccessorVersions
    */
   private static class _AccessorVersionWrapper extends AbstractAccessorVersion
@@ -172,6 +198,18 @@ public class VersionFactory
       super(-1, pAccessor.getPackageName(), pAccessor.getIdentifier(), pAccessor.getType(), pAccessor.getAttributes().stream()
           .map(SimpleAccessorAttributeDescription::of)
           .collect(Collectors.toList()));
+    }
+
+    @Override
+    public int getBranch()
+    {
+      return -1;
+    }
+
+    @Override
+    public int getVersion()
+    {
+      return -1;
     }
   }
 

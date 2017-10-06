@@ -5,6 +5,7 @@ import com.github.wglanzer.obsoleteaccessors.api.*;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.*;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.conversion.*;
 import com.github.wglanzer.obsoleteaccessors.impl.version.*;
+import com.google.common.collect.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
@@ -24,13 +25,28 @@ class ConvertableRegistry implements IConvertableRegistry
     {
       Arrays.stream(rootContainer.getChildren())
           .filter(pChildContainer -> pChildContainer.hasAnnotation(ObsoleteVersion.class) || pChildContainer.hasAnnotation(ObsoleteVersions.class))
-          .map(pChildContainer -> VersionFactory.createVersion(rootContainer, pChildContainer))
+          .map(pChildContainer -> VersionFactory.createVersion(rootContainer, pChildContainer, this::_findNext))
           .forEach(pVersionHierarchy -> {
-            for (int j = 0; j < pVersionHierarchy.length; j++)
+            if(pVersionHierarchy.length == 0)
+              return;
+
+            List<IAccessorVersion> versions = new ArrayList<>(Arrays.asList(pVersionHierarchy));
+            IAccessorVersion latestVersion = versions.remove(versions.size() - 1);
+
+            Multimap<Integer, IAccessorVersion> branches = Multimaps.index(versions, IAccessorVersion::getBranch);
+            List<Integer> branchIndices = new ArrayList<>(branches.keySet());
+            branchIndices.sort(Comparator.naturalOrder());
+            for (Integer branchIdx : branchIndices)
             {
-              IAccessorVersion child = pVersionHierarchy[j];
-              IAccessorVersion previous = j == 0 ? null : pVersionHierarchy[j - 1];
-              tree.addVersion(rootContainer.getAnnotation(ObsoleteVersionContainer.class).getParameterValue("category", String.class), previous, child);
+              List<IAccessorVersion> versionsInBranch = new ArrayList<>(branches.get(branchIdx));
+              versionsInBranch.sort(Comparator.comparingInt(IAccessorVersion::getVersion));
+              versionsInBranch.add(latestVersion);
+              for (int j = 0; j < versionsInBranch.size(); j++)
+              {
+                IAccessorVersion child = versionsInBranch.get(j);
+                IAccessorVersion previous = j == 0 ? null : versionsInBranch.get(j - 1);
+                tree.addVersion(rootContainer.getAnnotation(ObsoleteVersionContainer.class).getParameterValue("category", String.class), previous, child);
+              }
             }
           });
     }
@@ -77,6 +93,7 @@ class ConvertableRegistry implements IConvertableRegistry
         .collect(Collectors.toList());
   }
 
+  @NotNull
   private OAAccessor _createFunction(IAccessorVersion pLatestVersion, IAccessorAttributeConverter pAttributeConverter, OAAccessor pOldAccessor) throws AttributeConversionException
   {
     List<OAAttribute> params;
@@ -98,6 +115,17 @@ class ConvertableRegistry implements IConvertableRegistry
     }
 
     return new OAAccessor(pLatestVersion.getPkgName(), pLatestVersion.getId(), params, pLatestVersion.getType());
+  }
+
+  @Nullable
+  private IAccessorVersion _findNext(IAccessorVersion pVersion)
+  {
+    VersionRegistryTree.VersionNode node = tree.getVersion(null, pVersion);
+    Objects.requireNonNull(node);
+    VersionRegistryTree.VersionNode newerNode = node.getNewerVersion();
+    if(newerNode != null)
+      return newerNode.getMyVersion();
+    return null;
   }
 
 }

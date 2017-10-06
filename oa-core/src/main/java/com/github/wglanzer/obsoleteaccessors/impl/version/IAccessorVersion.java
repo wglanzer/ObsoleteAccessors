@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 public interface IAccessorVersion
 {
 
+  int getBranch();
+
   int getVersion();
 
   String getPkgName();
@@ -32,6 +34,9 @@ public interface IAccessorVersion
     boolean equal = true;
     if(getVersion() != -1 && pVersion.getVersion() != -1)
       equal = Objects.equals(getVersion(), pVersion.getVersion());
+
+    if(getBranch() != -1 && pVersion.getBranch() != -1)
+      equal = equal && Objects.equals(getBranch(), pVersion.getBranch());
 
     equal = equal && Objects.equals(getPkgName(), pVersion.getPkgName());
     equal = equal && Objects.equals(getId(), pVersion.getId());

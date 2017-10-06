@@ -109,6 +109,30 @@ public class Test_Obsoletes
     Assert.assertEquals("params", converted.getAttributes().get(1).getValue());
   }
 
+  @Test
+  public void test_branching() throws Exception
+  {
+    // testBranching_0 -> testBranch
+    OAAccessor accessor = new OAAccessor("branching_pkg", "testBranching_0", Arrays.asList(new OAAttribute(String.class, "asdf"), new OAAttribute(int.class, 5)), void.class);
+    OAAccessor converted = Obsoletes.convert(accessor, "js", key);
+    Assert.assertNotNull(converted);
+    Assert.assertEquals(2, converted.getAttributes().size());
+    Assert.assertEquals("asdf", converted.getAttributes().get(0).getValue());
+    Assert.assertEquals(null, converted.getAttributes().get(1).getValue());
+    Assert.assertEquals("testBranch", converted.getIdentifier());
+    Assert.assertEquals(void.class, converted.getType());
+
+    // testBranch (int) : int -> testBranch (String) : void
+    accessor = new OAAccessor("container", "testBranch", Collections.singletonList(new OAAttribute(int.class, 42)), int.class);
+    converted = Obsoletes.convert(accessor, "js", key);
+    Assert.assertNotNull(converted);
+    Assert.assertEquals(2, converted.getAttributes().size());
+    Assert.assertEquals("42", converted.getAttributes().get(0).getValue());
+    Assert.assertEquals(null, converted.getAttributes().get(1).getValue());
+    Assert.assertEquals("testBranch", converted.getIdentifier());
+    Assert.assertEquals(void.class, converted.getType());
+  }
+
   @Parameterized.Parameters(name = "{0}")
   public static Object[] data() throws Exception
   {

@@ -1,6 +1,7 @@
 package com.github.wglanzer.obsoleteaccessors;
 
 import com.github.wglanzer.obsoleteaccessors.api.*;
+import com.github.wglanzer.obsoleteaccessors.api.converters.AttributeConverters;
 import com.github.wglanzer.obsoleteaccessors.spi.IAttributeConverter;
 import org.jetbrains.annotations.*;
 
@@ -41,6 +42,18 @@ public class TestVersionContainerImpl
     return new int[0];
   }
 
+  @ObsoleteVersions({
+      @ObsoleteVersion(branch = 0, version = 0, pkgName = "branching_pkg"),
+      @ObsoleteVersion(branch = 0, version = 1, id = "testBranching_0", parameters = {String.class, int.class}, converter = AttributeConverters.DynamicSizeConverter.class),
+      @ObsoleteVersion(branch = 0, version = 2, parameters = {String.class}, converter = AttributeConverters.DynamicSizeConverter.class),
+      @ObsoleteVersion(branch = 1, version = 1, type = int.class),
+      @ObsoleteVersion(branch = 1, version = 0, parameters = {int.class}, converter = _IntListToIntArrayConverter.class),
+      @ObsoleteVersion(branch = 1, version = 2, parameters = {String.class}, converter = AttributeConverters.DynamicSizeConverter.class)
+  })
+  public void testBranch(String pParam, String pParam2)
+  {
+  }
+
   @ObsoleteVersionContainer(category = "js", pkgName = "innerContainer", serialize = true)
   public static class InnerContainer
   {
@@ -59,7 +72,7 @@ public class TestVersionContainerImpl
   {
     @NotNull
     @Override
-    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes)
+    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes, @NotNull OAAccessor pNextAccessor)
     {
       return Collections.singletonList(new OAAttribute(String.class, String.valueOf(pAttributes.get(0).getValue())));
     }
@@ -76,7 +89,7 @@ public class TestVersionContainerImpl
 
     @NotNull
     @Override
-    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes)
+    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes, @NotNull OAAccessor pNextAccessor)
     {
       return Stream.of(strings).map(pString -> new OAAttribute(String.class, pString)).collect(Collectors.toList());
     }

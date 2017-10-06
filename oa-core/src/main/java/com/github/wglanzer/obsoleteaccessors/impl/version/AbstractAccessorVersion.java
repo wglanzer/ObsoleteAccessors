@@ -27,6 +27,12 @@ abstract class AbstractAccessorVersion implements IAccessorVersion
   }
 
   @Override
+  public int getBranch()
+  {
+    return 0; //0 = Default-Branch
+  }
+
+  @Override
   public int getVersion()
   {
     return version;

@@ -37,9 +37,9 @@ class VersionRegistryTree
   }
 
   @Nullable
-  public VersionNode getVersion(String pCategory, IAccessorVersion pVersion)
+  public VersionNode getVersion(@Nullable String pCategory, IAccessorVersion pVersion)
   {
-    Multimap<String, VersionNode> categoryMap = tree.get(pCategory);
+    Multimap<String, VersionNode> categoryMap = _getPackagesInCategory(pCategory);
     if(categoryMap == null)
       throw new RuntimeException("Category not found (\"" + pCategory + "\")");
     Collection<VersionNode> pkg = categoryMap.get(pVersion.getPkgName());
@@ -51,9 +51,9 @@ class VersionRegistryTree
   }
 
   @NotNull
-  public List<VersionNode> findVersions(String pCategory, String pPkgName, String pIdentifier)
+  public List<VersionNode> findVersions(@Nullable String pCategory, String pPkgName, String pIdentifier)
   {
-    Multimap<String, VersionNode> category = tree.get(pCategory);
+    Multimap<String, VersionNode> category = _getPackagesInCategory(pCategory);
     if(category == null)
       return Collections.emptyList();
     Collection<VersionNode> pkg = category.get(pPkgName);
@@ -62,6 +62,19 @@ class VersionRegistryTree
     return pkg.stream()
         .filter(pNode -> pNode.getMyVersion().getId().equals(pIdentifier))
         .collect(Collectors.toList());
+  }
+
+  @Nullable
+  private Multimap<String, VersionNode> _getPackagesInCategory(@Nullable String pCategory)
+  {
+    if(pCategory != null)
+      return tree.get(pCategory);
+    else
+    {
+      Multimap<String, VersionNode> allPackages = ArrayListMultimap.create();
+      tree.values().forEach(allPackages::putAll);
+      return allPackages;
+    }
   }
 
   public static class VersionNode

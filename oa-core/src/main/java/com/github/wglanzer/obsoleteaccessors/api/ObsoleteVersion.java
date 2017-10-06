@@ -14,6 +14,11 @@ public @interface ObsoleteVersion
 {
 
   /**
+   * @return a branch describes multiple version-occurrences with multiple conversion methods.
+   */
+  int branch() default 0;
+
+  /**
    * @return the version this annotation represents
    */
   int version();

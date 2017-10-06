@@ -6,6 +6,7 @@ import com.github.wglanzer.obsoleteaccessors.spi.IAttributeConverter;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author W.Glanzer, 04.09.2017
@@ -13,22 +14,26 @@ import java.util.List;
 class ObsoleteAccessorVersion extends AbstractAccessorVersion
 {
 
+  private final int branch;
   private final Class<? extends IAttributeConverter> converter;
   private final String[] converterAttributes;
+  private final Function<IAccessorVersion, IAccessorVersion> nextVersionSupplier;
   private IAccessorAttributeConverter attrConverterInstance;
 
-  public ObsoleteAccessorVersion(int pVersion, String pPkgName, String pId, Class<? extends IAttributeConverter> pConverter, String[] pConverterAttributes,
-                                 Class<?> pType, List<IAccessorAttributeDescription<?>> pAttributeDescriptions)
+  ObsoleteAccessorVersion(int pBranch, int pVersion, String pPkgName, String pId, Class<? extends IAttributeConverter> pConverter, String[] pConverterAttributes,
+                          Class<?> pType, List<IAccessorAttributeDescription<?>> pAttributeDescriptions, Function<IAccessorVersion, IAccessorVersion> pNextVersionSupplier)
   {
     super(pVersion, pPkgName, pId, pType, pAttributeDescriptions);
+    branch = pBranch;
     converter = pConverter;
     converterAttributes = pConverterAttributes;
+    nextVersionSupplier = pNextVersionSupplier;
   }
 
   @Override
   public IAccessorAttributeConverter getConverter()
   {
-    if(attrConverterInstance == null)
+    if (attrConverterInstance == null)
     {
       try
       {
@@ -39,12 +44,12 @@ class ObsoleteAccessorVersion extends AbstractAccessorVersion
           String[] attrs = _isEmpty(converterAttributes) ? new String[0] : converterAttributes;
           paramConv = constWithAttrs.newInstance((Object) attrs);
         }
-        catch(NoSuchMethodException nsme)
+        catch (NoSuchMethodException nsme)
         {
           paramConv = converter.newInstance();
         }
 
-        attrConverterInstance = new ParameterAttributeConverter(paramConv);
+        attrConverterInstance = new ParameterAttributeConverter(paramConv, nextVersionSupplier.apply(this));
       }
       catch (Exception e)
       {
@@ -53,6 +58,12 @@ class ObsoleteAccessorVersion extends AbstractAccessorVersion
     }
 
     return attrConverterInstance;
+  }
+
+  @Override
+  public int getBranch()
+  {
+    return branch;
   }
 
   /**
