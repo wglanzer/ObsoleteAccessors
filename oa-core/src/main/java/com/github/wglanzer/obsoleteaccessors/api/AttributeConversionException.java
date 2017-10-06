@@ -17,6 +17,11 @@ public class AttributeConversionException extends Exception
     super(cause);
   }
 
+  public AttributeConversionException(String message)
+  {
+    super(message);
+  }
+
   public AttributeConversionException(String message, Throwable cause)
   {
     super(message, cause);

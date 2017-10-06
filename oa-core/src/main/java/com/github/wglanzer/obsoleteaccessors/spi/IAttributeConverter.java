@@ -17,11 +17,13 @@ public interface IAttributeConverter
    * Converts an ordered list of attributes to a newer one.
    * The result list has to be conform with the next ObsoleteVersion-Annotation.
    *
-   * @param pAttributes Attributes to be converted
+   * @param pAttributes   Attributes to be converted
+   * @param pNextAccessor Next accessor, for which the attributes should be mapped.
+   *                      All containing attributes in this accessor are type-only -> no value
    * @return attributes of the next version
    */
   @NotNull
-  List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes) throws AttributeConversionException;
+  List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes, @NotNull OAAccessor pNextAccessor) throws AttributeConversionException;
 
   /**
    * Default-Implementation with no conversion.
@@ -31,7 +33,7 @@ public interface IAttributeConverter
   {
     @NotNull
     @Override
-    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes)
+    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes, @NotNull OAAccessor pNextAccessor)
     {
       return pAttributes;
     }

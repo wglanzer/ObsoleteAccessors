@@ -2,6 +2,7 @@ package com.github.wglanzer.obsoleteaccessors.impl.attributes.conversion;
 
 import com.github.wglanzer.obsoleteaccessors.api.*;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.*;
+import com.github.wglanzer.obsoleteaccessors.impl.version.IAccessorVersion;
 import com.github.wglanzer.obsoleteaccessors.spi.IAttributeConverter;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,10 +16,12 @@ public class ParameterAttributeConverter implements IAccessorAttributeConverter
 {
 
   private final IAttributeConverter parameterConverter;
+  private final IAccessorVersion nextVersion;
 
-  public ParameterAttributeConverter(IAttributeConverter pParameterConverter)
+  public ParameterAttributeConverter(IAttributeConverter pParameterConverter, @NotNull IAccessorVersion pNextVersion)
   {
     parameterConverter = pParameterConverter;
+    nextVersion = pNextVersion;
   }
 
   @NotNull
@@ -31,7 +34,18 @@ public class ParameterAttributeConverter implements IAccessorAttributeConverter
         .collect(Collectors.toList());
 
     // Convert
-    List<OAAttribute> converted = parameterConverter.convert(attributes);
+    List<OAAttribute> mappedAttrs = nextVersion.getAttributeDescriptions().stream()
+        .map(pDescr -> new OAAttribute(pDescr.getType(), null)
+        {
+          @Override
+          public Object getValue()
+          {
+            throw new UnsupportedOperationException("Attribute has no readable value");
+          }
+        })
+        .collect(Collectors.toList());
+    OAAccessor myAccessor = new OAAccessor(nextVersion.getPkgName(), nextVersion.getId(), mappedAttrs, nextVersion.getType());
+    List<OAAttribute> converted = parameterConverter.convert(attributes, myAccessor);
 
     // Wrap OAA -> IAA
     return converted.stream()
