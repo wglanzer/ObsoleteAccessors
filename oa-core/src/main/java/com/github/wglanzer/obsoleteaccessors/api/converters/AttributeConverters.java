@@ -35,27 +35,20 @@ public abstract class AttributeConverters
     @Override
     public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes, @NotNull OAAccessor pNextAccessor) throws AttributeConversionException
     {
-      Map<Integer, Integer> mapping = _getMappingOldIndicesToNew(attributes);
-      ArrayList<OAAttribute> attributesCopy = new ArrayList<>(pAttributes);
-      mapping.forEach((pFrom, pTo) -> attributesCopy.add(pTo, attributesCopy.remove((int) pFrom)));
-      return attributesCopy;
-    }
-
-    @NotNull
-    private Map<Integer, Integer> _getMappingOldIndicesToNew(String[] pAttributes) throws AttributeConversionException
-    {
-      HashMap<Integer, Integer> result = new HashMap<>();
-      for (String attribute : pAttributes)
+      ArrayList<OAAttribute> attrs = new ArrayList<>(pAttributes);
+      for (String attribute : attributes)
       {
         String[] split = attribute.split("->");
         if(split.length != 2)
           throw new AttributeConversionException("Invalid format of attribute given for OrderConverter (\"" + attribute + "\"). " +
                                                      "It has to be {0}->{1}!");
+
         int fromIndex = Integer.parseInt(split[0]);
         int toIndex = Integer.parseInt(split[1]);
-        result.put(fromIndex, toIndex);
+        attrs.add(toIndex, attrs.remove(fromIndex));
       }
-      return result;
+
+      return attrs;
     }
   }
 
