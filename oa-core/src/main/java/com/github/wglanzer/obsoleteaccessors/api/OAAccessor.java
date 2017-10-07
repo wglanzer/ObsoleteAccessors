@@ -1,5 +1,6 @@
 package com.github.wglanzer.obsoleteaccessors.api;
 
+import com.google.common.base.Objects;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
@@ -52,6 +53,24 @@ public class OAAccessor
   public boolean isLatestAccessorVersion()
   {
     throw new UnsupportedOperationException("isLatestAccessorVersion() is not supported");
+  }
+
+  @Override
+  public boolean equals(Object pO)
+  {
+    if (this == pO) return true;
+    if (pO == null || getClass() != pO.getClass()) return false;
+    OAAccessor that = (OAAccessor) pO;
+    return Objects.equal(packageName, that.packageName) &&
+        Objects.equal(identifier, that.identifier) &&
+        Objects.equal(attributes, that.attributes) &&
+        Objects.equal(type, that.type);
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return Objects.hashCode(packageName, identifier, attributes, type);
   }
 
   @Override
