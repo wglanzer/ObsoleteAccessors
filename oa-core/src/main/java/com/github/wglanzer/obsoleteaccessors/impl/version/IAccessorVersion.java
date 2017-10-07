@@ -26,6 +26,8 @@ public interface IAccessorVersion
 
   IAccessorAttributeConverter getConverter();
 
+  boolean isLatestVersion();
+
   default boolean equalTo(IAccessorVersion pVersion)
   {
     if(pVersion == null)

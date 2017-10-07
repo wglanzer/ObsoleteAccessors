@@ -17,4 +17,10 @@ class LatestAccessorVersion extends AbstractAccessorVersion
     super(LATEST_VERSION, pPkgName, pId, pReturnType, pAttributeDescriptions);
   }
 
+  @Override
+  public boolean isLatestVersion()
+  {
+    return true;
+  }
+
 }

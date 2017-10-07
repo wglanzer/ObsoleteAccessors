@@ -1,6 +1,7 @@
 package com.github.wglanzer.obsoleteaccessors.impl.attributes.conversion;
 
 import com.github.wglanzer.obsoleteaccessors.api.*;
+import com.github.wglanzer.obsoleteaccessors.impl.InternalAccessor;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.*;
 import com.github.wglanzer.obsoleteaccessors.impl.version.IAccessorVersion;
 import com.github.wglanzer.obsoleteaccessors.spi.IAttributeConverter;
@@ -44,7 +45,7 @@ public class ParameterAttributeConverter implements IAccessorAttributeConverter
           }
         })
         .collect(Collectors.toList());
-    OAAccessor myAccessor = new OAAccessor(nextVersion.getPkgName(), nextVersion.getId(), mappedAttrs, nextVersion.getType());
+    OAAccessor myAccessor = new InternalAccessor(nextVersion.getPkgName(), nextVersion.getId(), mappedAttrs, nextVersion.getType(), nextVersion.isLatestVersion());
     List<OAAttribute> converted = parameterConverter.convert(attributes, myAccessor);
 
     // Wrap OAA -> IAA

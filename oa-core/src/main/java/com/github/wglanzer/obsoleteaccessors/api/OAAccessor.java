@@ -46,6 +46,14 @@ public class OAAccessor
     return type;
   }
 
+  /**
+   * @return returns <tt>true</tt> if this accessor represents one, that has no newer versions
+   */
+  public boolean isLatestAccessorVersion()
+  {
+    throw new UnsupportedOperationException("isLatestAccessorVersion() is not supported");
+  }
+
   @Override
   public String toString()
   {

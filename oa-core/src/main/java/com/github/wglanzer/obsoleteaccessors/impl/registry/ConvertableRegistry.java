@@ -2,6 +2,7 @@ package com.github.wglanzer.obsoleteaccessors.impl.registry;
 
 import com.github.wglanzer.annosave.api.IAnnotationContainer;
 import com.github.wglanzer.obsoleteaccessors.api.*;
+import com.github.wglanzer.obsoleteaccessors.impl.InternalAccessor;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.*;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.conversion.*;
 import com.github.wglanzer.obsoleteaccessors.impl.version.*;
@@ -88,7 +89,7 @@ class ConvertableRegistry implements IConvertableRegistry
           List<OAAttribute> attrs = pVersion.getAttributeDescriptions().stream()
               .map(pDescr -> new OAAttribute(pDescr.getType(), null))
               .collect(Collectors.toList());
-          return new OAAccessor(pVersion.getPkgName(), pVersion.getId(), attrs, pVersion.getType());
+          return new InternalAccessor(pVersion.getPkgName(), pVersion.getId(), attrs, pVersion.getType(), pVersion.isLatestVersion());
         })
         .collect(Collectors.toList());
   }
@@ -114,7 +115,7 @@ class ConvertableRegistry implements IConvertableRegistry
       throw new AttributeConversionException("Conversion for parameters failed for accessor: \"" + pOldAccessor + "\"", e);
     }
 
-    return new OAAccessor(pLatestVersion.getPkgName(), pLatestVersion.getId(), params, pLatestVersion.getType());
+    return new InternalAccessor(pLatestVersion.getPkgName(), pLatestVersion.getId(), params, pLatestVersion.getType(), pLatestVersion.isLatestVersion());
   }
 
   @Nullable

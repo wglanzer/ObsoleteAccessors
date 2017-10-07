@@ -67,4 +67,11 @@ abstract class AbstractAccessorVersion implements IAccessorVersion
   {
     return null;
   }
+
+  @Override
+  public boolean isLatestVersion()
+  {
+    return false;
+  }
+
 }
