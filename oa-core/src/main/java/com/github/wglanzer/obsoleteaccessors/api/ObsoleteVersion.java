@@ -4,13 +4,15 @@ import com.github.wglanzer.annosave.processor.api.AnnoPersist;
 import com.github.wglanzer.obsoleteaccessors.impl.util.NotChangedType;
 import com.github.wglanzer.obsoleteaccessors.spi.IAttributeConverter;
 
-import java.lang.annotation.Repeatable;
+import java.lang.annotation.*;
 
 /**
  * An "ObsoleteVersion" defines a specific version of an accessor via annotation.
  *
  * @author W.Glanzer, 04.09.2017
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Repeatable(ObsoleteVersions.class)
 @AnnoPersist
 public @interface ObsoleteVersion
