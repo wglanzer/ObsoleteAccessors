@@ -42,14 +42,12 @@ public class TestVersionContainerImpl
     return new int[0];
   }
 
-  @ObsoleteVersions({
-      @ObsoleteVersion(branch = 0, version = 0, pkgName = "branching_pkg"),
-      @ObsoleteVersion(branch = 0, version = 1, id = "testBranching_0", parameters = {String.class, int.class}, converter = AttributeConverters.DynamicSizeConverter.class),
-      @ObsoleteVersion(branch = 0, version = 2, parameters = {String.class}, converter = AttributeConverters.DynamicSizeConverter.class),
-      @ObsoleteVersion(branch = 1, version = 1, type = int.class),
-      @ObsoleteVersion(branch = 1, version = 0, parameters = {int.class}, converter = _IntListToIntArrayConverter.class),
-      @ObsoleteVersion(branch = 1, version = 2, parameters = {String.class}, converter = AttributeConverters.DynamicSizeConverter.class)
-  })
+  @ObsoleteVersion(branch = 0, version = 0, pkgName = "branching_pkg")
+  @ObsoleteVersion(branch = 0, version = 1, id = "testBranching_0", parameters = {String.class, int.class}, converter = AttributeConverters.DynamicSizeConverter.class)
+  @ObsoleteVersion(branch = 0, version = 2, parameters = {String.class}, converter = AttributeConverters.DynamicSizeConverter.class)
+  @ObsoleteVersion(branch = 1, version = 1, type = int.class)
+  @ObsoleteVersion(branch = 1, version = 0, parameters = {int.class}, converter = _IntListToIntArrayConverter.class)
+  @ObsoleteVersion(branch = 1, version = 2, parameters = {String.class}, converter = AttributeConverters.DynamicSizeConverter.class)
   public void testBranch(String pParam, String pParam2)
   {
   }
@@ -57,10 +55,8 @@ public class TestVersionContainerImpl
   @ObsoleteVersionContainer(category = "js", pkgName = "innerContainer", serialize = true)
   public static class InnerContainer
   {
-    @ObsoleteVersions({
-        @ObsoleteVersion(version = 0, id = "getContainer", type = TestVersionContainerImpl.class),
-        @ObsoleteVersion(version = 1, id = "getMyContainer")
-    })
+    @ObsoleteVersion(version = 0, id = "getContainer", type = TestVersionContainerImpl.class)
+    @ObsoleteVersion(version = 1, id = "getMyContainer")
     @Nullable
     public InnerContainer getMyInnerContainer(@NotNull TestVersionContainerImpl pContainer, int pID)
     {
