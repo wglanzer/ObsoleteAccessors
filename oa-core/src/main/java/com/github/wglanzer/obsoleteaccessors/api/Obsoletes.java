@@ -1,6 +1,7 @@
 package com.github.wglanzer.obsoleteaccessors.api;
 
 import com.github.wglanzer.obsoleteaccessors.impl.registry.RegistryDirectory;
+import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.*;
 
 import java.io.*;
@@ -99,6 +100,20 @@ public abstract class Obsoletes
   public static IRegistryKey register(@NotNull InputStream pStream) throws Exception
   {
     return RegistryDirectory.register(pStream);
+  }
+
+  /**
+   * Returns a multimap containing all packages in one category.
+   * Key = Name of the package
+   *
+   * @param pCategory Category to search for, <tt>null</tt> = All Categories
+   * @param pKey      Key for the registry to search in
+   * @return the multimap containing all packages, not <tt>null</tt>
+   */
+  @NotNull
+  public static Multimap<String, OAAccessor> getPackages(@Nullable String pCategory, @NotNull IRegistryKey pKey)
+  {
+    return RegistryDirectory.get(pKey).getPackages(pCategory);
   }
 
   /**

@@ -59,7 +59,10 @@ public class OAAccessor
   public boolean equals(Object pO)
   {
     if (this == pO) return true;
-    if (pO == null || getClass() != pO.getClass()) return false;
+    if (pO == null || (getClass() != pO.getClass() &&
+        (!getClass().isAssignableFrom(pO.getClass()) &&
+            !pO.getClass().isAssignableFrom(getClass()))))
+      return false;
     OAAccessor that = (OAAccessor) pO;
     return Objects.equal(packageName, that.packageName) &&
         Objects.equal(identifier, that.identifier) &&

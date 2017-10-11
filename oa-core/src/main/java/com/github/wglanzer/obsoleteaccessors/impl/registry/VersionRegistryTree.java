@@ -64,6 +64,15 @@ class VersionRegistryTree
         .collect(Collectors.toList());
   }
 
+  @NotNull
+  public Multimap<String, VersionNode> getPackages(@Nullable String pCategory)
+  {
+    Multimap<String, VersionNode> packages = _getPackagesInCategory(pCategory);
+    if(packages == null)
+      return ArrayListMultimap.create();
+    return packages;
+  }
+
   @Nullable
   private Multimap<String, VersionNode> _getPackagesInCategory(@Nullable String pCategory)
   {

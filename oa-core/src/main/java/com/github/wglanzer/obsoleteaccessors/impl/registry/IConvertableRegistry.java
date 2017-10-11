@@ -1,6 +1,7 @@
 package com.github.wglanzer.obsoleteaccessors.impl.registry;
 
 import com.github.wglanzer.obsoleteaccessors.api.OAAccessor;
+import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.*;
 
 import java.util.List;
@@ -16,5 +17,8 @@ public interface IConvertableRegistry
 
   @NotNull
   List<OAAccessor> findAccessors(@Nullable String pCategory, @NotNull String pPkgName, @NotNull String pIdentifier);
+
+  @NotNull
+  Multimap<String, OAAccessor> getPackages(@Nullable String pCategory);
 
 }

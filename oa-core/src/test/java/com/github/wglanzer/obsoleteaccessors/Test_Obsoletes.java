@@ -133,6 +133,17 @@ public class Test_Obsoletes
     Assert.assertEquals(void.class, converted.getType());
   }
 
+  @Test
+  public void test_getPackages() throws Exception
+  {
+    Collection<OAAccessor> accessors = Obsoletes.getPackages("js", key).values();
+    OAAccessor oldCPublic = new OAAccessor("container", "CLASSIFICATION_PRIVATE", null, int.class);
+    OAAccessor newCPublic = new OAAccessor("container", "CLASSIFICATION_PUBLIC", null, String.class);
+    OAAccessor getDoubleArr = new OAAccessor("obso", "getDoubleArr", Arrays.asList(new OAAttribute(double.class, null), new OAAttribute(int[].class, null)), double[].class);
+    OAAccessor getIntArray = new OAAccessor("container", "getIntArray", Collections.singletonList(new OAAttribute(String.class, null)), int[].class);
+    Assert.assertTrue(accessors.containsAll(Arrays.asList(oldCPublic, newCPublic, getDoubleArr, getIntArray)));
+  }
+
   @Parameterized.Parameters(name = "{0}")
   public static Object[] data() throws Exception
   {

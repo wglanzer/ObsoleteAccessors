@@ -95,6 +95,24 @@ class ConvertableRegistry implements IConvertableRegistry
   }
 
   @NotNull
+  @Override
+  public Multimap<String, OAAccessor> getPackages(@Nullable String pCategory)
+  {
+    ArrayListMultimap<String, OAAccessor> map = ArrayListMultimap.create();
+    for (Map.Entry<String, VersionRegistryTree.VersionNode> entry : tree.getPackages(pCategory).entries())
+      map.put(entry.getKey(), _createDummyAccessor(entry.getValue().getMyVersion()));
+    return map;
+  }
+
+  private OAAccessor _createDummyAccessor(IAccessorVersion version)
+  {
+    List<OAAttribute> attrs = version.getAttributeDescriptions().stream()
+        .map(pDescr -> new OAAttribute(pDescr.getType(), null))
+        .collect(Collectors.toList());
+    return new InternalAccessor(version.getPkgName(), version.getId(), attrs, version.getType(), version.isLatestVersion());
+  }
+
+  @NotNull
   private OAAccessor _createFunction(IAccessorVersion pLatestVersion, IAccessorAttributeConverter pAttributeConverter, OAAccessor pOldAccessor) throws AttributeConversionException
   {
     List<OAAttribute> params;
