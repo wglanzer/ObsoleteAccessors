@@ -10,7 +10,7 @@
   <packaging>pom</packaging>
 
   <name>ObsoleteAccessors: Parent</name>
-  <description>TO BE DONE</description>
+  <description>ObsoleteAccessors is a small framework for method versioning via annotations</description>
   <url>https://github.com/wglanzer/obsoleteaccessors</url>
 
   <developers>
