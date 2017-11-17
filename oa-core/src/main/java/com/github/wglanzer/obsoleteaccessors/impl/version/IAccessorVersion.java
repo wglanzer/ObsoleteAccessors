@@ -2,6 +2,7 @@ package com.github.wglanzer.obsoleteaccessors.impl.version;
 
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.IAccessorAttributeDescription;
 import com.github.wglanzer.obsoleteaccessors.impl.attributes.conversion.IAccessorAttributeConverter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,6 +12,9 @@ import java.util.stream.Collectors;
  */
 public interface IAccessorVersion
 {
+
+  @Nullable
+  String getUID();
 
   int getBranch();
 
@@ -33,22 +37,30 @@ public interface IAccessorVersion
     if(pVersion == null)
       return true;
 
-    boolean equal = true;
-    if(getVersion() != -1 && pVersion.getVersion() != -1)
-      equal = Objects.equals(getVersion(), pVersion.getVersion());
+    if(System.identityHashCode(this) == System.identityHashCode(pVersion))
+      return true;
 
-    if(getBranch() != -1 && pVersion.getBranch() != -1)
-      equal = equal && Objects.equals(getBranch(), pVersion.getBranch());
+    if(getUID() == null || pVersion.getUID() == null)
+    {
+      boolean equal = true;
+      if(getVersion() != -1 && pVersion.getVersion() != -1)
+        equal = Objects.equals(getVersion(), pVersion.getVersion());
 
-    equal = equal && Objects.equals(getPkgName(), pVersion.getPkgName());
-    equal = equal && Objects.equals(getId(), pVersion.getId());
-    equal = equal && Objects.equals(getType(), pVersion.getType());
+      if(getBranch() != -1 && pVersion.getBranch() != -1)
+        equal = equal && Objects.equals(getBranch(), pVersion.getBranch());
 
-    List<Class<?>> myDescr = getAttributeDescriptions().stream().map(IAccessorAttributeDescription::getType).collect(Collectors.toList());
-    List<Class<?>> thatDescr = pVersion.getAttributeDescriptions().stream().map(IAccessorAttributeDescription::getType).collect(Collectors.toList());
-    equal = equal && Objects.equals(myDescr, thatDescr);
+      equal = equal && Objects.equals(getPkgName(), pVersion.getPkgName());
+      equal = equal && Objects.equals(getId(), pVersion.getId());
+      equal = equal && Objects.equals(getType(), pVersion.getType());
 
-    return equal;
+      List<Class<?>> myDescr = getAttributeDescriptions().stream().map(IAccessorAttributeDescription::getType).collect(Collectors.toList());
+      List<Class<?>> thatDescr = pVersion.getAttributeDescriptions().stream().map(IAccessorAttributeDescription::getType).collect(Collectors.toList());
+      equal = equal && Objects.equals(myDescr, thatDescr);
+
+      return equal;
+    }
+    else
+      return getUID().equals(pVersion.getUID());
   }
 
 }

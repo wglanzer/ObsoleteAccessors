@@ -89,7 +89,7 @@ class ConvertableRegistry implements IConvertableRegistry
           List<OAAttribute> attrs = pVersion.getAttributeDescriptions().stream()
               .map(pDescr -> new OAAttribute(pDescr.getType(), null))
               .collect(Collectors.toList());
-          return new InternalAccessor(pVersion.getPkgName(), pVersion.getId(), attrs, pVersion.getType(), pVersion.isLatestVersion());
+          return new InternalAccessor(pVersion.getUID(), pVersion.getPkgName(), pVersion.getId(), attrs, pVersion.getType(), pVersion.isLatestVersion());
         })
         .collect(Collectors.toList());
   }
@@ -109,7 +109,7 @@ class ConvertableRegistry implements IConvertableRegistry
     List<OAAttribute> attrs = version.getAttributeDescriptions().stream()
         .map(pDescr -> new OAAttribute(pDescr.getType(), null))
         .collect(Collectors.toList());
-    return new InternalAccessor(version.getPkgName(), version.getId(), attrs, version.getType(), version.isLatestVersion());
+    return new InternalAccessor(version.getUID(), version.getPkgName(), version.getId(), attrs, version.getType(), version.isLatestVersion());
   }
 
   @NotNull
@@ -133,7 +133,7 @@ class ConvertableRegistry implements IConvertableRegistry
       throw new AttributeConversionException("Conversion for parameters failed for accessor: \"" + pOldAccessor + "\"", e);
     }
 
-    return new InternalAccessor(pLatestVersion.getPkgName(), pLatestVersion.getId(), params, pLatestVersion.getType(), pLatestVersion.isLatestVersion());
+    return new InternalAccessor(pLatestVersion.getUID(), pLatestVersion.getPkgName(), pLatestVersion.getId(), params, pLatestVersion.getType(), pLatestVersion.isLatestVersion());
   }
 
   @Nullable

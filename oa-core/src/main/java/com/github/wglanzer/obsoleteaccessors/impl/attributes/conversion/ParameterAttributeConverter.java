@@ -45,7 +45,7 @@ public class ParameterAttributeConverter implements IAccessorAttributeConverter
           }
         })
         .collect(Collectors.toList());
-    OAAccessor myAccessor = new InternalAccessor(nextVersion.getPkgName(), nextVersion.getId(), mappedAttrs, nextVersion.getType(), nextVersion.isLatestVersion());
+    OAAccessor myAccessor = new InternalAccessor(nextVersion.getUID(), nextVersion.getPkgName(), nextVersion.getId(), mappedAttrs, nextVersion.getType(), nextVersion.isLatestVersion());
     List<OAAttribute> converted = parameterConverter.convert(attributes, myAccessor);
 
     // Wrap OAA -> IAA

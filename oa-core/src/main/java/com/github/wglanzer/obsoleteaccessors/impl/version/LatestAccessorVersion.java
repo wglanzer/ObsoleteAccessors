@@ -12,9 +12,9 @@ class LatestAccessorVersion extends AbstractAccessorVersion
 
   public static final int LATEST_VERSION = Integer.MAX_VALUE;
 
-  public LatestAccessorVersion(String pPkgName, String pId, Class<?> pReturnType, List<IAccessorAttributeDescription<?>> pAttributeDescriptions)
+  public LatestAccessorVersion(String pUID, String pPkgName, String pId, Class<?> pReturnType, List<IAccessorAttributeDescription<?>> pAttributeDescriptions)
   {
-    super(LATEST_VERSION, pPkgName, pId, pReturnType, pAttributeDescriptions);
+    super(pUID, LATEST_VERSION, pPkgName, pId, pReturnType, pAttributeDescriptions);
   }
 
   @Override

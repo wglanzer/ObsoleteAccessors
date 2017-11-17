@@ -13,9 +13,9 @@ public class InternalAccessor extends OAAccessor
 
   private final boolean isLatest;
 
-  public InternalAccessor(@NotNull String pPackageName, @NotNull String pIdentifier, @Nullable List<OAAttribute> pAttributes, @NotNull Class<?> pType, boolean pIsLatest)
+  public InternalAccessor(@Nullable String pUUID, @NotNull String pPackageName, @NotNull String pIdentifier, @Nullable List<OAAttribute> pAttributes, @NotNull Class<?> pType, boolean pIsLatest)
   {
-    super(pPackageName, pIdentifier, pAttributes, pType);
+    super(pUUID, pPackageName, pIdentifier, pAttributes, pType);
     isLatest = pIsLatest;
   }
 

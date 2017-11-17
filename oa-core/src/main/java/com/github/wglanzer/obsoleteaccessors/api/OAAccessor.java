@@ -13,6 +13,7 @@ import java.util.*;
 public class OAAccessor
 {
 
+  private final String uuid;
   private final String packageName;
   private final String identifier;
   private final List<OAAttribute> attributes;
@@ -20,10 +21,22 @@ public class OAAccessor
 
   public OAAccessor(@NotNull String pPackageName, @NotNull String pIdentifier, @Nullable List<OAAttribute> pAttributes, @NotNull Class<?> pType)
   {
+    this(null, pPackageName, pIdentifier, pAttributes, pType);
+  }
+
+  public OAAccessor(@Nullable String pUUID, @NotNull String pPackageName, @NotNull String pIdentifier, @Nullable List<OAAttribute> pAttributes, @NotNull Class<?> pType)
+  {
+    uuid = pUUID;
     packageName = pPackageName;
     identifier = pIdentifier;
     attributes = pAttributes == null ? Collections.emptyList() : pAttributes;
     type = pType;
+  }
+
+  @Nullable
+  public String getUUID()
+  {
+    return uuid;
   }
 
   public String getPackageName()

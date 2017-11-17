@@ -10,20 +10,27 @@ import java.util.*;
  */
 abstract class AbstractAccessorVersion implements IAccessorVersion
 {
-
+  private final String uid;
   private final int version;
   private final String pkgName;
   private final String id;
   private final Class<?> type;
   private final List<IAccessorAttributeDescription<?>> attributeDescriptions;
 
-  public AbstractAccessorVersion(int pVersion, String pPkgName, String pID, Class<?> pType, List<IAccessorAttributeDescription<?>> pAttributeDescriptions)
+  public AbstractAccessorVersion(String pUID, int pVersion, String pPkgName, String pID, Class<?> pType, List<IAccessorAttributeDescription<?>> pAttributeDescriptions)
   {
+    uid = pUID;
     version = pVersion;
     pkgName = pPkgName;
     id = pID;
     type = pType;
     attributeDescriptions = pAttributeDescriptions == null ? Collections.emptyList() : pAttributeDescriptions;
+  }
+
+  @Override
+  public String getUID()
+  {
+    return uid;
   }
 
   @Override

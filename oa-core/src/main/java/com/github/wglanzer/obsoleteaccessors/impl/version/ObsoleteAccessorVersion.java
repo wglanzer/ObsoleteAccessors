@@ -20,10 +20,10 @@ class ObsoleteAccessorVersion extends AbstractAccessorVersion
   private final Function<IAccessorVersion, IAccessorVersion> nextVersionSupplier;
   private IAccessorAttributeConverter attrConverterInstance;
 
-  ObsoleteAccessorVersion(int pBranch, int pVersion, String pPkgName, String pId, Class<? extends IAttributeConverter> pConverter, String[] pConverterAttributes,
+  ObsoleteAccessorVersion(String pUUID, int pBranch, int pVersion, String pPkgName, String pId, Class<? extends IAttributeConverter> pConverter, String[] pConverterAttributes,
                           Class<?> pType, List<IAccessorAttributeDescription<?>> pAttributeDescriptions, Function<IAccessorVersion, IAccessorVersion> pNextVersionSupplier)
   {
-    super(pVersion, pPkgName, pId, pType, pAttributeDescriptions);
+    super(pUUID, pVersion, pPkgName, pId, pType, pAttributeDescriptions);
     branch = pBranch;
     converter = pConverter;
     converterAttributes = pConverterAttributes;

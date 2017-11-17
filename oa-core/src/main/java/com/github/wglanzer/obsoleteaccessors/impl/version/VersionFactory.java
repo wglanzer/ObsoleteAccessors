@@ -53,7 +53,7 @@ public class VersionFactory
                                                    List<IAccessorAttributeDescription<?>> pLatestDescriptions, IAnnotation[] pAnnotations,
                                                    Function<IAccessorVersion, IAccessorVersion> pNextVersionSupplier)
   {
-    LatestAccessorVersion latest = new LatestAccessorVersion(pRootPackageName, pLatestName, pLatestType, pLatestDescriptions);
+    LatestAccessorVersion latest = new LatestAccessorVersion(UUID.randomUUID().toString(), pRootPackageName, pLatestName, pLatestType, pLatestDescriptions);
     IAccessorVersion[] obsoleteVersions = _createVersion(pRootPackageName, pAnnotations, latest, pNextVersionSupplier);
     IAccessorVersion[] versions = new IAccessorVersion[obsoleteVersions.length + 1];
     System.arraycopy(obsoleteVersions, 0, versions, 0, obsoleteVersions.length);
@@ -101,7 +101,7 @@ public class VersionFactory
       else
         attributeDescriptions = pLatest.getAttributeDescriptions();
 
-      versions[i] = new ObsoleteAccessorVersion(_getBranch(version), _getVersion(version), pkgName, id,
+      versions[i] = new ObsoleteAccessorVersion(UUID.randomUUID().toString(), _getBranch(version), _getVersion(version), pkgName, id,
                                                 (Class<? extends IAttributeConverter>) version.getParameterValue("converter"),
                                                 (String[]) version.getParameterValue("converterAttributes"),
                                                 type, attributeDescriptions, pNextVersionSupplier);
@@ -195,7 +195,7 @@ public class VersionFactory
   {
     public _AccessorVersionWrapper(OAAccessor pAccessor)
     {
-      super(-1, pAccessor.getPackageName(), pAccessor.getIdentifier(), pAccessor.getType(), pAccessor.getAttributes().stream()
+      super(pAccessor.getUUID(), -1, pAccessor.getPackageName(), pAccessor.getIdentifier(), pAccessor.getType(), pAccessor.getAttributes().stream()
           .map(SimpleAccessorAttributeDescription::of)
           .collect(Collectors.toList()));
     }
