@@ -52,6 +52,18 @@ public class TestVersionContainerImpl
   {
   }
 
+  @ObsoleteVersion(branch = 0, version = 0, pkgName = "searchPkg", id = "testSearch2", parameters = int.class, converter = _ParameterConsumerConverter.class, converterAttributes = "0")
+  public boolean testSearch1(String pParam)
+  {
+    return false;
+  }
+
+  @ObsoleteVersion(branch = 0, version = 0, pkgName = "searchPkg", id = "testSearch2", converter = _ThrowingConverter.class)
+  public boolean testSearch2(int pParam)
+  {
+    return false;
+  }
+
   @ObsoleteVersionContainer(category = "js", pkgName = "innerContainer", serialize = true)
   public static class InnerContainer
   {
@@ -88,6 +100,16 @@ public class TestVersionContainerImpl
     public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes, @NotNull OAAccessor pNextAccessor)
     {
       return Stream.of(strings).map(pString -> new OAAttribute(String.class, pString)).collect(Collectors.toList());
+    }
+  }
+
+  public static class _ThrowingConverter implements IAttributeConverter
+  {
+    @NotNull
+    @Override
+    public List<OAAttribute> convert(@NotNull List<OAAttribute> pAttributes, @NotNull OAAccessor pNextAccessor) throws AttributeConversionException
+    {
+      throw new AttributeConversionException();
     }
   }
 

@@ -144,6 +144,34 @@ public class Test_Obsoletes
     Assert.assertTrue(accessors.containsAll(Arrays.asList(oldCPublic, newCPublic, getDoubleArr, getIntArray)));
   }
 
+  @Test
+  public void test_findAndGet() throws Exception
+  {
+    List<OAAccessor> accessors = Obsoletes.findAccessors("js", "searchPkg", "testSearch2", key);
+    Assert.assertEquals(2, accessors.size());
+    List<OAAccessor> failedAccessors = new ArrayList<>();
+
+    for (OAAccessor acc : accessors)
+    {
+      try
+      {
+        OAAccessor accessorWithAttribute = new OAAccessor(acc.getUUID(), acc.getPackageName(), acc.getIdentifier(), Collections.singletonList(new OAAttribute(int.class, 42)), acc.getType());
+        OAAccessor converted = Obsoletes.convert(accessorWithAttribute, "js", key);
+        Assert.assertNotNull(converted);
+        Assert.assertEquals("container", converted.getPackageName());
+        Assert.assertEquals("testSearch1", converted.getIdentifier());
+        Assert.assertEquals("0", converted.getAttributes().get(0).getValue());
+      }
+      catch(Exception e)
+      {
+        failedAccessors.add(acc);
+      }
+    }
+
+    if(failedAccessors.size() != 1)
+      Assert.fail();
+  }
+
   @Parameterized.Parameters(name = "{0}")
   public static Object[] data() throws Exception
   {
